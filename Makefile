@@ -30,7 +30,7 @@ c clean soft-clean:
 		terraform* \
 		platform/utils/{master,node}.tar.gz \
 		platform/utils/master/ \
-		platform/utils/id_ecdsa*
+		platform/utils/id_*
 
 full-clean: clean
 	@rm -rf ${BINPATH}/terraform*
@@ -44,7 +44,7 @@ download:
 	@unzip -o "platform/utils/*.zip" -d ${BINPATH}/
 
 build:
-	@ssh-keygen -b 521 -t ecdsa -f platform/utils/id_ecdsa -N ''
+	@ssh-keygen -b 4096 -t rsa -f platform/utils/id_rsa -N ''
 	@cd platform/utils && tar -czf master.tar.gz \
 		setup-network-environment \
 		openshift oc .bashrc

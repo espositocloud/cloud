@@ -1,7 +1,7 @@
 variable:
   DO_SSH_ID:      { default: core }
-  SSH_PRIVKEY_PATH: { default: platform/utils/id_ecdsa }
-  SSH_PUBKEY_PATH:  { default: platform/utils/id_ecdsa.pub }
+  SSH_PRIVKEY_PATH: { default: platform/utils/id_rsa }
+  SSH_PUBKEY_PATH:  { default: platform/utils/id_rsa.pub }
   DO_TOKEN:       {}
   DO_DOMAIN:      { default: localhost }
   DO_IMAGE:       { default: coreos-stable }
