@@ -1,3 +1,5 @@
+.cache/
+examples/
 *.json
 *.tf.json
 *.tfvars
@@ -6,12 +8,4 @@
 *.backup
 vars.*
 state.*
-*.png
-
-*.log
-*.tar.gz
-*.gz
 secrets.*
-
-examples/
-.cache/
