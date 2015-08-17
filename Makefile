@@ -47,7 +47,7 @@ build:
 	@ssh-keygen -b 4096 -t rsa -f platform/utils/id_rsa -N ''
 	@cd platform/utils && tar -czf master.tar.gz \
 		setup-network-environment \
-		openshift .bashrc
+		openshift
 	@cd platform/utils && tar -czf node.tar.gz \
 		setup-network-environment \
 		openshift

@@ -32,6 +32,16 @@ write-files:
       sleep 1 && echo -n .; done
     sleep 5
 
+- path: /home/core/.bashrc
+  permissions: '0644'
+  owner: core
+  content: |
+    if [[ $- != *i* ]]; then
+      return; fi
+
+    export KUBECONFIG=${OSCONFIG}/master/admin.kubeconfig
+    export CURL_CA_BUNDLE=${OSCONFIG}/master/ca.crt
+
 coreos:
   update:
     group: alpha
@@ -84,10 +94,6 @@ coreos:
       ExecStartPost=/usr/bin/sleep 5
       ExecStartPost=/usr/bin/cp -R ${OSCONFIG}/master ${HOME}/
       ExecStartPost=/usr/bin/chown -R core:core ${HOME}/master/
-      # Setup for CLI
-      ExecStartPost=/usr/bin/rm ${HOME}/.bashrc
-      ExecStartPost=/usr/bin/mv /opt/bin/.bashrc ${HOME}/.bashrc
-      ExecStartPost=/usr/bin/chown core:core ${HOME}/.bashrc
       RemainAfterExit=yes
       Type=oneshot
 
