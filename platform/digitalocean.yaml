@@ -1,7 +1,7 @@
 variable:
   DO_SSH_ID:      { default: core }
-  SSH_PRIVKEY_PATH: { default: platform/utils/id_rsa }
-  SSH_PUBKEY_PATH:  { default: platform/utils/id_rsa.pub }
+  SSH_PRIVKEY_PATH: { default: .cache/id_rsa }
+  SSH_PUBKEY_PATH:  { default: .cache/id_rsa.pub }
   DO_TOKEN:       {}
   DO_DOMAIN:      { default: localhost }
   DO_IMAGE:       { default: coreos-alpha }
@@ -56,7 +56,7 @@ resource:
         key_file: ${var.SSH_PRIVKEY_PATH}
       provisioner:
         file:
-          source: platform/utils/master.tar.gz
+          source: .cache/master.tar.gz
           destination: /home/core/master.tar.gz
         remote-exec:
           inline:
@@ -83,7 +83,7 @@ resource:
         key_file: ${var.SSH_PRIVKEY_PATH}
       provisioner:
         file:
-          source: platform/utils/node.tar.gz
+          source: .cache/node.tar.gz
           destination: /home/core/node.tar.gz
         remote-exec:
           inline:
@@ -114,12 +114,12 @@ output:
   todo1:
     value: |
       scp -r -i ${var.SSH_PRIVKEY_PATH} -o StrictHostKeyChecking=no apps core@${digitalocean_droplet.master.ipv4_address}:./; \
-      scp -r -i ${var.SSH_PRIVKEY_PATH} -o StrictHostKeyChecking=no core@${digitalocean_droplet.master.ipv4_address}:./master platform/utils/; \
-      scp -r -i ${var.SSH_PRIVKEY_PATH} -o StrictHostKeyChecking=no platform/utils/master core@${digitalocean_droplet.nodes.0.ipv4_address}:./
+      scp -r -i ${var.SSH_PRIVKEY_PATH} -o StrictHostKeyChecking=no core@${digitalocean_droplet.master.ipv4_address}:./master .cache/; \
+      scp -r -i ${var.SSH_PRIVKEY_PATH} -o StrictHostKeyChecking=no .cache/master core@${digitalocean_droplet.nodes.0.ipv4_address}:./
   todo1bis:
     value: |
-      scp -r -i ${var.SSH_PRIVKEY_PATH} -o StrictHostKeyChecking=no platform/utils/master core@${digitalocean_droplet.nodes.1.ipv4_address}:./; \
-      scp -r -i ${var.SSH_PRIVKEY_PATH} -o StrictHostKeyChecking=no platform/utils/master core@${digitalocean_droplet.nodes.2.ipv4_address}:./
+      scp -r -i ${var.SSH_PRIVKEY_PATH} -o StrictHostKeyChecking=no .cache/master core@${digitalocean_droplet.nodes.1.ipv4_address}:./; \
+      scp -r -i ${var.SSH_PRIVKEY_PATH} -o StrictHostKeyChecking=no .cache/master core@${digitalocean_droplet.nodes.2.ipv4_address}:./
   todo2:
     value: |
       log to master -- ssh -i ${var.SSH_PRIVKEY_PATH} -o StrictHostKeyChecking=no core@${digitalocean_droplet.master.ipv4_address}

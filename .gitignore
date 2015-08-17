@@ -13,5 +13,5 @@ state.*
 *.gz
 secrets.*
 
-utils/
 examples/
+.cache/

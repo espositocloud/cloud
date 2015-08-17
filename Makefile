@@ -2,6 +2,7 @@ TERRAFORM_VERSION := 0.6.3
 OPENSHIFT_VERSION := 1.0.4-757efd9
 
 #export GOPATH := ${GOPATH}
+CACHE := .cache
 BINPATH := ${GOPATH}/bin
 export PATH := ${GOPATH}/bin:${PATH}
 TERRAFORM_URL := https://dl.bintray.com/mitchellh/terraform/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
@@ -28,27 +29,28 @@ compile:
 c clean soft-clean:
 	@rm -rf \
 		terraform* \
-		platform/utils/{master,node}.tar.gz \
-		platform/utils/master/ \
-		platform/utils/id_*
+		${CACHE}/{master,node}.tar.gz \
+		${CACHE}/master/ \
+		${CACHE}/id_*
 
 full-clean: clean
-	@rm -rf ${BINPATH}/terraform*
-	@rm -rf platform/utils/*.{zip,tar.gz}
+	@rm -rf \
+		${BINPATH}/terraform* \
+		.cache
 
 download:
-	@curl -L -o platform/utils/terraform.zip             -z platform/utils/terraform.zip             ${TERRAFORM_URL}
-	@curl -L -o platform/utils/setup-network-environment -z platform/utils/setup-network-environment ${SETUP_NET_ENV_URL}
-	@curl -L -o platform/utils/openshift-origin.tar.gz   -z platform/utils/openshift-origin.tar.gz   ${OPENSHIFT_URL}
-	@tar -xf platform/utils/openshift-origin.tar.gz -C platform/utils/
-	@unzip -o "platform/utils/*.zip" -d ${BINPATH}/
+	@curl -L -o ${CACHE}/terraform.zip             -z ${CACHE}/terraform.zip             ${TERRAFORM_URL}
+	@curl -L -o ${CACHE}/setup-network-environment -z ${CACHE}/setup-network-environment ${SETUP_NET_ENV_URL}
+	@curl -L -o ${CACHE}/openshift-origin.tar.gz   -z ${CACHE}/openshift-origin.tar.gz   ${OPENSHIFT_URL}
+	@tar -xf ${CACHE}/openshift-origin.tar.gz -C ${CACHE}/
+	@unzip -o "${CACHE}/*.zip" -d ${BINPATH}/
 
 build:
-	@ssh-keygen -b 4096 -t rsa -f platform/utils/id_rsa -N ''
-	@cd platform/utils && tar -czf master.tar.gz \
+	@ssh-keygen -b 4096 -t rsa -f ${CACHE}/id_rsa -N ''
+	@cd ${CACHE} && tar -czf master.tar.gz \
 		setup-network-environment \
 		openshift
-	@cd platform/utils && tar -czf node.tar.gz \
+	@cd ${CACHE} && tar -czf node.tar.gz \
 		setup-network-environment \
 		openshift
 	@echo 'Builds done'
