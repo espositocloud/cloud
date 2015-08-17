@@ -44,6 +44,7 @@ download:
 	@unzip -o "platform/utils/*.zip" -d ${BINPATH}/
 
 build:
+	@ssh-keygen -b 521 -t ecdsa -f platform/utils/id_ecdsa -N ''
 	@cd platform/utils && tar -czf master.tar.gz \
 		setup-network-environment \
 		openshift oc .bashrc
@@ -53,9 +54,6 @@ build:
 	@echo 'Builds done'
 
 # Prerequisites
-keygen:
-	@ssh-keygen -b 521 -t ecdsa -f platform/utils/id_ecdsa -N ''
-
 install:
 	@go install github.com/dbohdan/remarshal
 	@cp downloads/{oc,openshift} ${BINPATH}/

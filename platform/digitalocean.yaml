@@ -1,6 +1,6 @@
 variable:
   DO_SSH_ID:      { default: core }
-  SSH_PUBLIC_KEY: { default: "${file('platform/utils/id_ecdsa.pub')}" }
+  SSH_PUBKEY_PATH: { default: platform/utils/id_ecdsa.pub }
   DO_TOKEN:       {}
   DO_DOMAIN:      { default: localhost }
   DO_IMAGE:       { default: coreos-stable }
@@ -21,6 +21,7 @@ resource:
       vars:
         HOME: /home/core
         OSCONFIG: ${var.OSCONFIG}
+        SSH_PUBKEY: ${file("${var.SSH_PUBKEY_PATH}")}
 
     node_conf:
       filename: platform/node.yaml
@@ -28,14 +29,14 @@ resource:
         HOME: /home/core
         OSCONFIG: ${var.OSCONFIG}
         MASTER_IP: ${digitalocean_droplet.master.ipv4_address_private}
+        SSH_PUBKEY: ${file("${var.SSH_PUBKEY_PATH}")}
       depends_on:
       - digitalocean_droplet.master
 
   digitalocean_ssh_key:
     superuser:
       name: ${var.DO_SSH_ID}
-      public_key: ${var.SSH_PUBLIC_KEY}
-
+      public_key: ${file("${var.SSH_PUBKEY_PATH}")}
   digitalocean_droplet:
     master:
       image: ${var.DO_IMAGE}

@@ -4,7 +4,7 @@
 hostname: master
 
 ssh_authorized_keys:
-- ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC7XpxdpfJOtHeni/zRBYX2bpjEQDxjfMwbpoGVs53p9Cql3+Jj3cIqN7Tb3DcrE0xPlV+mjcemu5zDDikcnyhpLkts07Jga0B3qHDa3yHY4E0GIFlkA8Ni/7fjlP5dtsfhb57USEy0k3Tt1/CJSsXIZA3TgwsiC4EDXxZ2vrvAFNbQz7q8XeoFPRpyL5nAEcUrBssO2pQrRRbb+RFL7BhjWqwPynukVtntGs8t42+691tymiMPjS1z/nHP4vsv84PhM1x2zmUFJGYYIuWmfTdqMUUUsWMvhP2kGq3rjINzSDY8PNkZm5iQ54SGSiggCP3c013x0uKWmvB0K1yoi+1X
+- ${SSH_PUBKEY}
 
 write-files:
 - path: /etc/conf.d/nfs
