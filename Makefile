@@ -47,16 +47,16 @@ build:
 	@ssh-keygen -b 4096 -t rsa -f platform/utils/id_rsa -N ''
 	@cd platform/utils && tar -czf master.tar.gz \
 		setup-network-environment \
-		openshift oc .bashrc
+		openshift .bashrc
 	@cd platform/utils && tar -czf node.tar.gz \
 		setup-network-environment \
-		openshift oc
+		openshift
 	@echo 'Builds done'
 
 # Prerequisites
 install:
 	@go install github.com/dbohdan/remarshal
-	@cp downloads/{oc,openshift} ${BINPATH}/
+	@cp downloads/openshift ${BINPATH}/
 
 future-upgrade:
 	@echo 'Update Go dependencies'

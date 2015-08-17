@@ -70,6 +70,7 @@ coreos:
       ExecStartPre=/usr/bin/chown root:root /opt/bin/openshift
       ExecStartPre=/usr/bin/chmod +x /opt/bin/openshift
       ExecStartPre=/usr/bin/ln -s /opt/bin/openshift /opt/bin/oadm
+      ExecStartPre=/usr/bin/ln -s /opt/bin/openshift /opt/bin/oc
       ExecStart=/opt/bin/openshift start master \
       --write-config=${OSCONFIG}/master/ \
       --listen=https://0.0.0.0:8443 \
