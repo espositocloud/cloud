@@ -1,6 +1,7 @@
 variable:
   DO_SSH_ID:      { default: core }
-  SSH_PUBKEY_PATH: { default: platform/utils/id_ecdsa.pub }
+  SSH_PRIVKEY_PATH: { default: platform/utils/id_ecdsa }
+  SSH_PUBKEY_PATH:  { default: platform/utils/id_ecdsa.pub }
   DO_TOKEN:       {}
   DO_DOMAIN:      { default: localhost }
   DO_IMAGE:       { default: coreos-stable }
@@ -52,7 +53,7 @@ resource:
       - template_file.master_conf
       connection:
         user: core
-        key_file: platform/utils/id_ecdsa
+        key_file: ${SSH_PRIVKEY_PATH}
       provisioner:
         file:
           source: platform/utils/master.tar.gz
@@ -79,7 +80,7 @@ resource:
       - template_file.node_conf
       connection:
         user: core
-        key_file: platform/utils/id_ecdsa
+        key_file: ${SSH_PRIVKEY_PATH}
       provisioner:
         file:
           source: platform/utils/node.tar.gz
@@ -108,17 +109,17 @@ output:
   openshift:
     value: |
       openshift dashboard -- https://${digitalocean_droplet.master.ipv4_address}:8443
-      log to node-0 -- ssh -i platform/utils/id_ecdsa -o StrictHostKeyChecking=no core@${digitalocean_droplet.nodes.0.ipv4_address}
+      log to node-0 -- ssh -i ${SSH_PRIVKEY_PATH} -o StrictHostKeyChecking=no core@${digitalocean_droplet.nodes.0.ipv4_address}
       external entrypoint -- http://${digitalocean_droplet.nodes.0.ipv4_address}
   todo1:
     value: |
-      scp -r -i platform/utils/id_ecdsa -o StrictHostKeyChecking=no apps core@${digitalocean_droplet.master.ipv4_address}:./; \
-      scp -r -i platform/utils/id_ecdsa -o StrictHostKeyChecking=no core@${digitalocean_droplet.master.ipv4_address}:./master platform/utils/; \
-      scp -r -i platform/utils/id_ecdsa -o StrictHostKeyChecking=no platform/utils/master core@${digitalocean_droplet.nodes.0.ipv4_address}:./
+      scp -r -i ${SSH_PRIVKEY_PATH} -o StrictHostKeyChecking=no apps core@${digitalocean_droplet.master.ipv4_address}:./; \
+      scp -r -i ${SSH_PRIVKEY_PATH} -o StrictHostKeyChecking=no core@${digitalocean_droplet.master.ipv4_address}:./master platform/utils/; \
+      scp -r -i ${SSH_PRIVKEY_PATH} -o StrictHostKeyChecking=no platform/utils/master core@${digitalocean_droplet.nodes.0.ipv4_address}:./
   todo1bis:
     value: |
-      scp -r -i platform/utils/id_ecdsa -o StrictHostKeyChecking=no platform/utils/master core@${digitalocean_droplet.nodes.1.ipv4_address}:./; \
-      scp -r -i platform/utils/id_ecdsa -o StrictHostKeyChecking=no platform/utils/master core@${digitalocean_droplet.nodes.2.ipv4_address}:./
+      scp -r -i ${SSH_PRIVKEY_PATH} -o StrictHostKeyChecking=no platform/utils/master core@${digitalocean_droplet.nodes.1.ipv4_address}:./; \
+      scp -r -i ${SSH_PRIVKEY_PATH} -o StrictHostKeyChecking=no platform/utils/master core@${digitalocean_droplet.nodes.2.ipv4_address}:./
   todo2:
     value: |
-      log to master -- ssh -i platform/utils/id_ecdsa -o StrictHostKeyChecking=no core@${digitalocean_droplet.master.ipv4_address}
+      log to master -- ssh -i ${SSH_PRIVKEY_PATH} -o StrictHostKeyChecking=no core@${digitalocean_droplet.master.ipv4_address}
