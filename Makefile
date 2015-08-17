@@ -10,7 +10,7 @@ OPENSHIFT_URL := https://github.com/openshift/origin/releases/download/v1.0.4/op
 SETUP_NET_ENV_URL := https://github.com/kelseyhightower/setup-network-environment/releases/download/v1.0.0/setup-network-environment
 
 
-up: clean compile download build
+up: clean compile build
 	@terraform plan -out terraform.tfplan
 	@terraform apply terraform.tfplan
 
@@ -19,6 +19,7 @@ delete destroy: compile
 	@terraform destroy
 
 compile:
+	@mkdir -p ${CACHE}
 	@remarshal \
 		-if yaml -i platform/digitalocean.yaml \
 		-of json -o terraform.tf.json
@@ -38,13 +39,6 @@ full-clean: clean
 		${BINPATH}/terraform* \
 		.cache
 
-download:
-	@curl -L -o ${CACHE}/terraform.zip             -z ${CACHE}/terraform.zip             ${TERRAFORM_URL}
-	@curl -L -o ${CACHE}/setup-network-environment -z ${CACHE}/setup-network-environment ${SETUP_NET_ENV_URL}
-	@curl -L -o ${CACHE}/openshift-origin.tar.gz   -z ${CACHE}/openshift-origin.tar.gz   ${OPENSHIFT_URL}
-	@tar -xf ${CACHE}/openshift-origin.tar.gz -C ${CACHE}/
-	@unzip -o "${CACHE}/*.zip" -d ${BINPATH}/
-
 build:
 	@ssh-keygen -b 4096 -t rsa -f ${CACHE}/id_rsa -N ''
 	@cd ${CACHE} && tar -czf master.tar.gz \
@@ -58,7 +52,11 @@ build:
 # Prerequisites
 install:
 	@go install github.com/dbohdan/remarshal
-	@cp downloads/openshift ${BINPATH}/
+	@curl -L -o ${CACHE}/terraform.zip             -z ${CACHE}/terraform.zip             ${TERRAFORM_URL}
+	@curl -L -o ${CACHE}/setup-network-environment -z ${CACHE}/setup-network-environment ${SETUP_NET_ENV_URL}
+	@curl -L -o ${CACHE}/openshift-origin.tar.gz   -z ${CACHE}/openshift-origin.tar.gz   ${OPENSHIFT_URL}
+	@tar -xf ${CACHE}/openshift-origin.tar.gz -C ${CACHE}/
+	@unzip -o "${CACHE}/*.zip" -d ${BINPATH}/
 
 future-upgrade:
 	@echo 'Update Go dependencies'
