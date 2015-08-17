@@ -1,0 +1,218 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: monitoring
+  annotations:
+    description: Monitoring with InfluxDB/Grafana for OpenShift/Kubernetes cluster
+    tags: monitoring,influxdb,grafana
+labels:
+  app: monit
+  application: monitoring
+parameters:
+-
+  name: SERVER_NAME
+  description: server name
+-
+  name: INFLUXDB_PASSWORD
+  description: Password used for DB authentication
+  generate: expression
+  from: '[\w]{12}'
+objects:
+-
+  apiVersion: v1
+  kind: Service
+  metadata:
+    name: influxdb
+    labels:
+      component: influxdb
+  spec:
+    selector:
+      component: influxdb
+    ports:
+    -
+      port: 80
+      targetPort: api
+-
+  apiVersion: v1
+  kind: Service
+  metadata:
+    name: influxdb-ui
+    labels:
+      component: influxdb
+  spec:
+    selector:
+      component: influxdb
+    ports:
+    -
+      port: 80
+      targetPort: ui
+-
+  apiVersion: v1
+  kind: ReplicationController
+  metadata:
+    name: influxdb
+    labels:
+      component: influxdb
+  spec:
+    replicas: 1
+    selector:
+      component: influxdb
+    template:
+      metadata:
+        labels:
+          component: influxdb
+      spec:
+        volumes:
+        -
+          name: influxdb-data
+          emptyDir: {}
+        containers:
+          -
+            name: influxdb
+            image: tutum/influxdb:0.9
+            volumeMounts:
+              -
+                mountPath: /data
+                name: influxdb-data
+            ports:
+              -
+                name: ui
+                containerPort: 8083
+              -
+                name: api
+                containerPort: 8086
+              -
+                name: raft
+                containerPort: 8090
+              -
+                name: protobuf
+                containerPort: 8099
+            env:
+              -
+                name: ADMIN_USER
+                value: root
+              -
+                name: INFLUXDB_INIT_PWD
+                value: root
+#              -
+#                name: PRE_CREATE_DB
+#                value: k8s;grafana
+-
+  apiVersion: v1
+  kind: Service
+  metadata:
+    name: heapster
+    labels:
+      component: heapster
+  spec:
+    selector:
+      component: heapster
+    ports:
+    -
+      port: 80
+      targetPort: ui
+-
+  apiVersion: v1
+  kind: ReplicationController
+  metadata:
+    name: heapster
+    labels:
+      component: heapster
+  spec:
+    replicas: 1
+    selector:
+      component: heapster
+    template:
+      metadata:
+        labels:
+          component: heapster
+      spec:
+        serviceAccount: heapster
+        containers:
+        -
+          name: heapster
+          image: kubernetes/heapster:v0.17.0
+          args:
+          - -port=8082
+          - -source=kubernetes:https://openshift.default.svc.cluster.local
+          - -sink=influxdb:http://influxdb.default.svc.cluster.local
+          - -logtostderr=true
+          ports:
+          -
+            name: ui
+            containerPort: 8082
+-
+  apiVersion: v1
+  kind: Service
+  metadata:
+    name: grafana
+    labels:
+      component: grafana
+  spec:
+    selector:
+      component: grafana
+    ports:
+      -
+        port: 80
+        targetPort: http
+-
+  apiVersion: v1
+  kind: ReplicationController
+  metadata:
+    name: grafana
+    labels:
+      component: grafana
+  spec:
+    replicas: 1
+    selector:
+      component: grafana
+    template:
+      metadata:
+        labels:
+          component: grafana
+      spec:
+        containers:
+        -
+          name: grafana
+          image: grafana/grafana:2.1.1
+          ports:
+          -
+            name: http
+            containerPort: 3000
+          env:
+          -
+            name: GF_SERVER_ROOT_URL
+            value: http://${SERVER_NAME}
+          -
+            name: GF_SECURITY_ADMIN_PASSWORD
+            value: admin
+-
+  apiVersion: v1
+  kind: Route
+  metadata:
+    name: heapster
+  spec:
+    host: h.${SERVER_NAME}
+    to:
+      kind: Service
+      name: heapster
+-
+  apiVersion: v1
+  kind: Route
+  metadata:
+    name: influxdb
+  spec:
+    host: i.${SERVER_NAME}
+    to:
+      kind: Service
+      name: influxdb-ui
+-
+  apiVersion: v1
+  kind: Route
+  metadata:
+    name: grafana
+  spec:
+    host: ${SERVER_NAME}
+    to:
+      kind: Service
+      name: grafana

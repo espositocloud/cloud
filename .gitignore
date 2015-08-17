@@ -1,0 +1,17 @@
+*.json
+*.tf.json
+*.tfvars
+*.tfstate
+*.tfplan
+*.backup
+vars.*
+state.*
+*.png
+
+*.log
+*.tar.gz
+*.gz
+secrets.*
+
+utils/
+examples/

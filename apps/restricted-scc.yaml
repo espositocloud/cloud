@@ -1,0 +1,19 @@
+allowHostDirVolumePlugin: false
+allowHostNetwork: false
+allowHostPorts: false
+allowPrivilegedContainer: true
+allowedCapabilities: null
+apiVersion: v1
+groups:
+- system:authenticated
+kind: SecurityContextConstraints
+metadata:
+  creationTimestamp: 2015-08-15T13:46:09Z
+  name: restricted
+  resourceVersion: "62"
+  selfLink: /api/v1/securitycontextconstraints/restricted
+  uid: fc2ff681-4353-11e5-b45c-040164d47001
+runAsUser:
+  type: RunAsAny
+seLinuxContext:
+  type: MustRunAs

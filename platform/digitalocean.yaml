@@ -1,0 +1,123 @@
+variable:
+  DO_SSH_ID:      { default: core }
+  SSH_PUBLIC_KEY: { default: "${file('platform/utils/id_ecdsa.pub')}" }
+  DO_TOKEN:       {}
+  DO_DOMAIN:      { default: localhost }
+  DO_IMAGE:       { default: coreos-stable }
+  DO_REGION:      { default: fra1 }
+  DO_MASTER_SIZE: { default: 1gb }
+  DO_NODE_SIZE:   { default: 2gb }
+  NODES:          { default: 3 }
+  OSCONFIG:       { default: /opt/bin/openshift.local.config }
+
+provider:
+  digitalocean:
+    token: ${var.DO_TOKEN}
+
+resource:
+  template_file:
+    master_conf:
+      filename: platform/master.yaml
+      vars:
+        HOME: /home/core
+        OSCONFIG: ${var.OSCONFIG}
+
+    node_conf:
+      filename: platform/node.yaml
+      vars:
+        HOME: /home/core
+        OSCONFIG: ${var.OSCONFIG}
+        MASTER_IP: ${digitalocean_droplet.master.ipv4_address_private}
+      depends_on:
+      - digitalocean_droplet.master
+
+  digitalocean_ssh_key:
+    superuser:
+      name: ${var.DO_SSH_ID}
+      public_key: ${var.SSH_PUBLIC_KEY}
+
+  digitalocean_droplet:
+    master:
+      image: ${var.DO_IMAGE}
+      name: master
+      region: ${var.DO_REGION}
+      size: ${var.DO_MASTER_SIZE}
+      ipv6: true
+      private_networking: true
+      user_data: ${template_file.master_conf.rendered}
+      ssh_keys:
+      - ${digitalocean_ssh_key.superuser.fingerprint}
+      depends_on:
+      - template_file.master_conf
+      connection:
+        user: core
+        key_file: platform/utils/id_ecdsa
+      provisioner:
+        file:
+          source: platform/utils/master.tar.gz
+          destination: /home/core/master.tar.gz
+        remote-exec:
+          inline:
+          - /opt/bin/wufae /home/core/master.tar.gz
+          - sudo tar -xf /home/core/master.tar.gz -C /opt/bin
+          - rm -f /home/core/master.tar.gz
+
+    nodes:
+      count: ${var.NODES}
+      image: ${var.DO_IMAGE}
+      name:  node-${count.index}
+      region: ${var.DO_REGION}
+      size: ${var.DO_NODE_SIZE}
+      ipv6: true
+      private_networking: true
+      user_data: ${template_file.node_conf.rendered}
+      ssh_keys:
+      - ${digitalocean_ssh_key.superuser.fingerprint}
+      depends_on:
+      - digitalocean_droplet.master
+      - template_file.node_conf
+      connection:
+        user: core
+        key_file: platform/utils/id_ecdsa
+      provisioner:
+        file:
+          source: platform/utils/node.tar.gz
+          destination: /home/core/node.tar.gz
+        remote-exec:
+          inline:
+          - /opt/bin/wufae /home/core/node.tar.gz
+          - sudo tar -xf /home/core/node.tar.gz -C /opt/bin
+          - rm -f /home/core/node.tar.gz
+
+  digitalocean_domain:
+    cloud:
+      name: ${var.DO_DOMAIN}
+      ip_address: ${digitalocean_droplet.nodes.0.ipv4_address}
+      depends_on:
+      - digitalocean_droplet.nodes
+
+  digitalocean_record:
+    cloud_ipv4:
+      domain: ${digitalocean_domain.cloud.name}
+      type: A
+      name: foobar
+      value: ${digitalocean_droplet.nodes.0.ipv4_address}
+
+output:
+  openshift:
+    value: |
+      openshift dashboard -- https://${digitalocean_droplet.master.ipv4_address}:8443
+      log to node-0 -- ssh -i platform/utils/id_ecdsa -o StrictHostKeyChecking=no core@${digitalocean_droplet.nodes.0.ipv4_address}
+      external entrypoint -- http://${digitalocean_droplet.nodes.0.ipv4_address}
+  todo1:
+    value: |
+      scp -r -i platform/utils/id_ecdsa -o StrictHostKeyChecking=no apps core@${digitalocean_droplet.master.ipv4_address}:./; \
+      scp -r -i platform/utils/id_ecdsa -o StrictHostKeyChecking=no core@${digitalocean_droplet.master.ipv4_address}:./master platform/utils/; \
+      scp -r -i platform/utils/id_ecdsa -o StrictHostKeyChecking=no platform/utils/master core@${digitalocean_droplet.nodes.0.ipv4_address}:./
+  todo1bis:
+    value: |
+      scp -r -i platform/utils/id_ecdsa -o StrictHostKeyChecking=no platform/utils/master core@${digitalocean_droplet.nodes.1.ipv4_address}:./; \
+      scp -r -i platform/utils/id_ecdsa -o StrictHostKeyChecking=no platform/utils/master core@${digitalocean_droplet.nodes.2.ipv4_address}:./
+  todo2:
+    value: |
+      log to master -- ssh -i platform/utils/id_ecdsa -o StrictHostKeyChecking=no core@${digitalocean_droplet.master.ipv4_address}

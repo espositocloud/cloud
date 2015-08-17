@@ -1,0 +1,104 @@
+#cloud-config
+
+---
+hostname: node
+
+ssh_authorized_keys:
+- ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC7XpxdpfJOtHeni/zRBYX2bpjEQDxjfMwbpoGVs53p9Cql3+Jj3cIqN7Tb3DcrE0xPlV+mjcemu5zDDikcnyhpLkts07Jga0B3qHDa3yHY4E0GIFlkA8Ni/7fjlP5dtsfhb57USEy0k3Tt1/CJSsXIZA3TgwsiC4EDXxZ2vrvAFNbQz7q8XeoFPRpyL5nAEcUrBssO2pQrRRbb+RFL7BhjWqwPynukVtntGs8t42+691tymiMPjS1z/nHP4vsv84PhM1x2zmUFJGYYIuWmfTdqMUUUsWMvhP2kGq3rjINzSDY8PNkZm5iQ54SGSiggCP3c013x0uKWmvB0K1yoi+1X
+
+write-files:
+- path: /opt/bin/wupiao
+  permissions: '0755'
+  content: |
+    #!/bin/bash
+    # [w]ait [u]ntil [p]ort [i]s [a]ctually [o]pen
+    [ -n "$1" ] && [ -n "$2" ] && while ! curl --output /dev/null \
+      --silent --head --fail \
+      http://$${1}:$${2}; do sleep 1 && echo -n .; done;
+    exit $?
+
+- path: /opt/bin/wufae
+  permissions: '0755'
+  content: |
+    #!/bin/bash
+    # [w]ait [u]ntil [f]ile [a]ctually [e]xists
+    while [ ! -f "$1" ]; do
+      sleep 1 && echo -n .; done
+    sleep 5
+
+coreos:
+  update:
+    group: alpha
+    reboot-strategy: off
+
+  etcd2:
+    listen-client-urls: http://0.0.0.0:2379
+    advertise-client-urls: http://0.0.0.0:2379
+    initial-cluster: master=http://${MASTER_IP}:2380
+    proxy: on
+
+  fleet:
+    metadata: role=node
+
+  units:
+  - name: bootstrap-node.service
+    command: start
+    content: |
+      [Unit]
+      Description=Bootstrap the OpenShift node
+      Requires=network-online.target
+      After=network-online.target
+
+      [Service]
+      # Setup network environment
+      ExecStartPre=/opt/bin/wufae /opt/bin/setup-network-environment
+      ExecStartPre=/usr/bin/chown root:root /opt/bin/setup-network-environment
+      ExecStartPre=/usr/bin/chmod +x /opt/bin/setup-network-environment
+      ExecStart=/opt/bin/setup-network-environment
+      # Generate OpenShift node configurations
+      WorkingDirectory=/opt/bin
+      ExecStartPre=/usr/bin/mkdir -p ${OSCONFIG}
+      ExecStartPre=/opt/bin/wufae /opt/bin/openshift
+      ExecStartPre=/usr/bin/chown root:root /opt/bin/openshift
+      ExecStartPre=/usr/bin/chmod +x /opt/bin/openshift
+      ExecStartPre=/usr/bin/ln -s /opt/bin/openshift /opt/bin/oadm
+      # wait for master config
+      ExecStartPre=/opt/bin/wufae ${HOME}/master/master-config.yaml
+      ExecStartPre=/usr/bin/mv ${HOME}/master ${OSCONFIG}/
+      ExecStartPre=/usr/bin/chown -R root:root ${OSCONFIG}/
+      ExecStartPre=/opt/bin/oadm create-node-config \
+      --master=https://${MASTER_IP}:8443 \
+      --dns-ip=${MASTER_IP} \
+      --node-dir=${OSCONFIG}/node \
+      --node=$private_ipv4 \
+      --hostnames=$private_ipv4 \
+      --listen=https://0.0.0.0:10250 \
+      --volume-dir=/var/volumes
+      # wait for kubernetes master to be up and ready
+      ExecStartPre=/opt/bin/wupiao ${MASTER_IP} 8443
+      ExecStart=/usr/bin/echo 'Ready for starting OpenShift Node!'
+      RemainAfterExit=yes
+      Type=oneshot
+
+  - name: fleet.service
+    command: start
+
+  - name: docker.service
+    command: start
+
+  - name: openshift-node.service
+    command: start
+    content: |
+      [Unit]
+      Description=OpenShift Node
+      Documentation=https://github.com/openshift/origin
+      Requires=bootstrap-node.service etcd2.service docker.service
+      After=bootstrap-node.service etcd2.service docker.service
+
+      [Service]
+      EnvironmentFile=/etc/network-environment
+      WorkingDirectory=/opt/bin
+      ExecStart=/opt/bin/openshift start node \
+      --config=${OSCONFIG}/node/node-config.yaml
+      Restart=always
+      RestartSec=10

@@ -1,0 +1,288 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: gasistafelice-template
+  annotations:
+    description: Gasista Felice is the platform for DES Macerata project
+    tags: app,gas,des
+labels:
+  app: gf
+  application: gasistafelice
+parameters:
+-
+  name: ENV
+  description: dev/stage/prod environment
+  value: prod
+-
+  name: SERVER_NAME
+  description: server name
+-
+  name: POSTGRES_PASSWORD
+  description: Password used for DB authentication
+  generate: expression
+  from: '[\w]{12}'
+objects:
+-
+  apiVersion: v1
+  kind: ReplicationController
+  metadata:
+    name: db
+    labels:
+      name: db
+  spec:
+    replicas: 1
+    selector:
+      name: db
+    template:
+      metadata:
+        labels:
+          name: db
+      spec:
+        volumes:
+        -
+          name: postgres-ps
+          emptyDir: {}
+        containers:
+        -
+          name: db
+          image: openshift/postgresql-92-centos7
+          env:
+          -
+            name: POSTGRESQL_USER
+            value: app
+          -
+            name: POSTGRESQL_PASSWORD
+            value: ${POSTGRES_PASSWORD}
+          -
+            name: POSTGRESQL_DATABASE
+            value: app
+          -
+            name: POSTGRESQL_ADMIN_PASSWORD
+            value: ${POSTGRES_PASSWORD}
+          ports:
+          -
+            name: postgresql-port
+            containerPort: 5432
+          volumeMounts:
+          -
+            name: postgres-ps
+            mountPath: /var/lib/pgsql/data
+            readOnly: false
+-
+  apiVersion: v1
+  kind: Service
+  metadata:
+    name: db
+    labels:
+      name: db
+  spec:
+    ports:
+    -
+      port: 5432
+      targetPort: postgresql-port
+    selector:
+      name: db
+-
+  apiVersion: v1
+#  kind: DeploymentConfig
+  kind: ReplicationController
+  metadata:
+    name: back
+  spec:
+    replicas: 1
+    selector:
+      name: back
+#  triggers:
+#  - type: ConfigChange 
+#  - imageChangeParams:
+#      automatic: true
+#      containerNames:
+#      - helloworld
+#      from:
+#        kind: ImageStreamTag
+#        name: hello-openshift:latest
+#    type: ImageChange  
+#  strategy:
+#    type: Rolling
+    template:
+      metadata:
+        labels:
+          name: back
+      spec:
+        containers:
+        -
+          name: back
+          image: kobe25/gasistafelice-back
+          ports:
+          -
+            name: back-port
+            containerPort: 5000
+          env:
+          -
+            name: APP_ENV
+            value: ${ENV}
+          -
+            name: APP_SERVER_NAME
+            value: ${SERVER_NAME}
+          -
+            name: POSTGRES_USER
+            value: app
+          -
+            name: POSTGRES_PASSWORD
+            value: ${POSTGRES_PASSWORD}
+          -
+            name: POSTGRESQL_USER
+            value: app
+          -
+            name: POSTGRESQL_PASSWORD
+            value: ${POSTGRES_PASSWORD}
+          -
+            name: POSTGRESQL_DATABASE
+            value: app
+          -
+            name: POSTGRESQL_ADMIN_PASSWORD
+            value: ${POSTGRES_PASSWORD}
+          -
+            name: PGUSER
+            value: app
+          -
+            name: PGPASSWORD
+            value: ${POSTGRES_PASSWORD}
+          livenessProbe:
+            initialDelaySeconds: 15
+            timeoutSeconds: 1
+            exec:
+              command:
+              - cat
+              - /tmp/health
+          securityContext:
+            runAsUser: 1000
+            privileged: true
+-
+  apiVersion: v1
+  kind: Service
+  metadata:
+    name: back
+  spec:
+    ports:
+    -
+      port: 5000
+      targetPort: back-port
+    selector:
+      name: back
+-
+  apiVersion: v1
+  kind: ReplicationController
+  metadata:
+    name: front
+  spec:
+    replicas: 1
+    selector:
+      name: front
+    template:
+      metadata:
+        labels:
+          name: front
+      spec:
+        containers:
+        -
+          name: front
+          image: kobe25/gasistafelice-front
+          ports:
+          -
+            name: front-port
+            containerPort: 5000
+-
+  apiVersion: v1
+  kind: Service
+  metadata:
+    name: front
+  spec:
+    ports:
+    -
+      port: 5000
+      targetPort: front-port
+    selector:
+      name: front
+-
+  apiVersion: v1
+  kind: ReplicationController
+  metadata:
+    name: proxy
+  spec:
+    replicas: 1
+    selector:
+      name: nginx
+    template:
+      metadata:
+        labels:
+          name: nginx
+      spec:
+        volumes:
+        -
+          name: nginx-log
+          emptyDir: {}
+        -
+          name: nginx-cache
+          emptyDir: {}
+        -
+          name: nginx-run
+          emptyDir: {}
+        containers:
+        -
+          name: proxy
+          image: kobe25/gasistafelice-proxy
+          livenessProbe:
+            initialDelaySeconds: 10
+            timeoutSeconds: 1
+            httpGet:
+              path: /
+              port: insecure-port
+          readinessProbe:
+            initialDelaySeconds: 10
+            timeoutSeconds: 1
+            httpGet:
+              path: /
+              port: insecure-port
+          securityContext:
+            runAsUser: 104
+            privileged: true
+          ports:
+          -
+            name: insecure-port
+            containerPort: 8080
+          volumeMounts:
+          -
+            name: nginx-log
+            mountPath: /var/log/nginx
+            readOnly: false
+          -
+            name: nginx-cache
+            mountPath: /var/cache/nginx
+            readOnly: false
+          -
+            name: nginx-run
+            mountPath: /var/run
+            readOnly: false
+-
+  apiVersion: v1
+  kind: Service
+  metadata:
+    name: proxy
+  spec:
+    selector:
+      name: nginx
+    ports:
+    -
+      port: 8080
+      targetPort: insecure-port
+-
+  apiVersion: v1
+  kind: Route
+  metadata:
+    name: route
+  spec:
+    host: ${SERVER_NAME}
+    to:
+      kind: Service
+      name: proxy
