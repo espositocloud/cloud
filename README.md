@@ -19,3 +19,7 @@ Gasista Felice (specific):
 * [Base Docker Image for Python2 apps](https://github.com/kobe25/uwsgi-python2)
 * [Guidelines and Convention for DevOps-oriented apps](https://github.com/kobe25/devops)
 * [My Thesis](https://github.com/kobe25/thesis)
+
+## License
+
+This project is released under the [GNU AGPL v3](LICENSE.md).
