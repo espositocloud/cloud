@@ -3,7 +3,7 @@ kind: Template
 metadata:
   name: monitoring
   annotations:
-    description: Monitoring with InfluxDB/Grafana for OpenShift/Kubernetes cluster
+    description: Monitoring with InfluxDB/Grafana for OpenShift cluster
     tags: monitoring,influxdb,grafana
 labels:
   app: monit
@@ -69,7 +69,7 @@ objects:
         containers:
           -
             name: influxdb
-            image: tutum/influxdb:0.9
+            image: tutum/influxdb:0.8.8
             volumeMounts:
               -
                 mountPath: /data
