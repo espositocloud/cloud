@@ -3,6 +3,38 @@ kind: List
 items:
 -
   apiVersion: v1
+  kind: SecurityContextConstraints
+  metadata:
+    name: restricted
+  allowPrivilegedContainer: true
+  runAsUser:
+    type: RunAsAny
+  seLinuxContext:
+    type: MustRunAs
+  groups:
+  - system:authenticated
+-
+  apiVersion: v1
+  kind: SecurityContextConstraints
+  metadata:
+    name: privileged
+  allowHostDirVolumePlugin: true
+  allowHostNetwork: true
+  allowHostPorts: true
+  allowPrivilegedContainer: true
+  allowedCapabilities: null
+  runAsUser:
+    type: RunAsAny
+  seLinuxContext:
+    type: RunAsAny
+  groups:
+  - system:cluster-admins
+  - system:nodes
+  users:
+  - system:serviceaccount:openshift-infra:build-controller
+  - system:serviceaccount:default:router
+-
+  apiVersion: v1
   kind: ServiceAccount
   metadata:
     name: registry
@@ -16,35 +48,3 @@ items:
   kind: ServiceAccount
   metadata:
     name: heapster
--
-  apiVersion: v1
-  allowPrivilegedContainer: true
-  groups:
-  - system:authenticated
-  kind: SecurityContextConstraints
-  metadata:
-    name: restricted
-  runAsUser:
-    type: RunAsAny
-  seLinuxContext:
-    type: MustRunAs
--
-  apiVersion: v1
-  allowHostDirVolumePlugin: true
-  allowHostNetwork: true
-  allowHostPorts: true
-  allowPrivilegedContainer: true
-  allowedCapabilities: null
-  groups:
-  - system:cluster-admins
-  - system:nodes
-  kind: SecurityContextConstraints
-  metadata:
-    name: privileged
-  runAsUser:
-    type: RunAsAny
-  seLinuxContext:
-    type: RunAsAny
-  users:
-  - system:serviceaccount:openshift-infra:build-controller
-  - system:serviceaccount:default:router

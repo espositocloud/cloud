@@ -1,9 +1,7 @@
 #!/bin/bash
 
-oc delete scc privileged
-oc delete scc restricted
+oc delete scc privileged restricted
 oc create -f base.yaml
-
 ./registry
 ./router
 ./monitoring
