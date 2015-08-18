@@ -1,17 +1,9 @@
 #!/bin/bash
 
-oc create -f base-sa.yaml
+oc delete scc privileged
+oc delete scc restricted
+oc create -f base.yaml
 
 ./registry
 ./router
 ./monitoring
-
-# Security Context Constraint
-# https://docs.openshift.org/latest/admin_guide/manage_scc.html
-echo
-echo 'allowPrivilegedContainer: true'
-echo
-echo 'runAsUser:'
-echo '  type: RunAsAny'
-echo
-oc edit scc restricted

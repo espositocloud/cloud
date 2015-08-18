@@ -3,11 +3,6 @@
 # https://docs.openshift.org/latest/architecture/core_concepts/routes.html
 # http://blog.kubernetes.io/2015/07/strong-simple-ssl-for-kubernetes.html
 
-echo
-echo 'at the end, append the following line: '
-echo '- system:serviceaccount:default:router'
-echo
-oc edit scc privileged
 oadm router ex-router \
   --replicas=1 \
   --credentials=${KUBECONFIG} \

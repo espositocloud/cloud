@@ -1,7 +1,7 @@
 #!/bin/bash
 # https://docs.openshift.org/latest/admin_guide/install/docker_registry.html
 
-mkdir -p /var/lib/openshift/docker-registry
+sudo mkdir -p /var/lib/openshift/docker-registry
 oadm registry \
   --config=${OMASTER}/admin.kubeconfig \
   --credentials=${OMASTER}/openshift-registry.kubeconfig

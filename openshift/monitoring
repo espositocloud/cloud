@@ -7,7 +7,8 @@ oadm policy add-cluster-role-to-user \
 
 oc new-app -f monitoring.yaml \
   -p SERVER_NAME=${BASE_DOMAIN}
-  watch -n 1 oc get pods
+
+./watch
 
 # Logging
 # https://docs.openshift.org/latest/admin_guide/aggregate_logging.html
