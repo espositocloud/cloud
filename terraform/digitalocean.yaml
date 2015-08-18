@@ -105,7 +105,7 @@ resource:
     cloud_ipv4:
       domain: ${digitalocean_domain.cloud.name}
       type: A
-      name: foobar
+      name: '*'
       value: ${digitalocean_droplet.nodes.0.ipv4_address}
 
 output:
