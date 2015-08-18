@@ -9,7 +9,8 @@ variable:
   DO_MASTER_SIZE: { default: 1gb }
   DO_NODE_SIZE:   { default: 2gb }
   NODES:          { default: 3 }
-  OSCONFIG:       { default: /opt/bin/openshift.local.config }
+  OMASTER:        { default: /opt/bin/openshift.local.config/master }
+  ONODE:          { default: /opt/bin/openshift.local.config/node }
 
 provider:
   digitalocean:
@@ -21,14 +22,14 @@ resource:
       filename: platform/master.yaml
       vars:
         HOME: /home/core
-        OSCONFIG: ${var.OSCONFIG}
+        OMASTER: ${var.OMASTER}
         SSH_PUBKEY: ${file("${var.SSH_PUBKEY_PATH}")}
 
     node_conf:
       filename: platform/node.yaml
       vars:
         HOME: /home/core
-        OSCONFIG: ${var.OSCONFIG}
+        ONODE: ${var.ONODE}
         MASTER_IP: ${digitalocean_droplet.master.ipv4_address_private}
         SSH_PUBKEY: ${file("${var.SSH_PUBKEY_PATH}")}
       depends_on:

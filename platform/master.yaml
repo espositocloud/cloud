@@ -42,17 +42,17 @@ coreos:
       ExecStartPre=/usr/bin/ln -s /opt/bin/openshift /opt/bin/oadm
       ExecStartPre=/usr/bin/ln -s /opt/bin/openshift /opt/bin/oc
       ExecStart=/opt/bin/openshift start master \
-      --write-config=${OSCONFIG}/master/ \
+      --write-config=${OMASTER}/ \
       --listen=https://0.0.0.0:8443 \
       --master=https://$private_ipv4:8443 \
       --public-master=https://$public_ipv4:8443 \
       --dns=tcp://$private_ipv4:53 \
       --etcd=http://$private_ipv4:2379
       # Copy files for nodes
-      ExecStartPost=/usr/bin/chmod +r ${OSCONFIG}/master/admin.kubeconfig
-      ExecStartPost=/usr/bin/chmod +r ${OSCONFIG}/master/openshift-registry.kubeconfig
+      ExecStartPost=/usr/bin/chmod +r ${OMASTER}/admin.kubeconfig
+      ExecStartPost=/usr/bin/chmod +r ${OMASTER}/openshift-registry.kubeconfig
       ExecStartPost=/usr/bin/sleep 5
-      ExecStartPost=/usr/bin/cp -R ${OSCONFIG}/master ${HOME}/
+      ExecStartPost=/usr/bin/cp -R ${OMASTER} ${HOME}/
       ExecStartPost=/usr/bin/chown -R core:core ${HOME}/master/
       RemainAfterExit=yes
       Type=oneshot
@@ -76,7 +76,7 @@ coreos:
       EnvironmentFile=/etc/network-environment
       ExecStartPre=/opt/bin/wupiao 127.0.0.1:2379/v2/machines
       ExecStart=/opt/bin/openshift start master \
-      --config=${OSCONFIG}/master/master-config.yaml
+      --config=${OMASTER}/master-config.yaml
       Restart=always
       RestartSec=10
 write-files:
@@ -113,6 +113,7 @@ write-files:
     if [[ $- != *i* ]]; then
       return; fi
 
-    export KUBECONFIG=${OSCONFIG}/master/admin.kubeconfig
-    export CURL_CA_BUNDLE=${OSCONFIG}/master/ca.crt
+    export OMASTER=${OMASTER}
+    export KUBECONFIG=${OMASTER}/admin.kubeconfig
+    export CURL_CA_BUNDLE=${OMASTER}/ca.crt
     export BASE_DOMAIN=${BASE_DOMAIN}

@@ -1,17 +1,13 @@
 #!/bin/bash
 
-OSCONFIG=/opt/bin/openshift.local.config/master
-DOMAIN=befaircloud.me
-
-
 oc create -f serviceaccounts.yaml
 
 # Registry
 # https://docs.openshift.org/latest/admin_guide/install/docker_registry.html
 oadm registry \
---config=${OSCONFIG}/admin.kubeconfig \
---credentials=${OSCONFIG}/openshift-registry.kubeconfig
-#--mount-host=/var/lib/openshift/docker-registry
+--config=${OMASTER}/admin.kubeconfig \
+--credentials=${OMASTER}/openshift-registry.kubeconfig \
+--mount-host=/var/lib/openshift/docker-registry
 
 #TODO
 
@@ -42,12 +38,12 @@ oadm router ex-router \
 --service-account=router
 
 #oadm ca create-server-cert \
-#  --signer-cert=${OSCONFIG}/ca.crt \
-#  --signer-key=${OSCONFIG}/ca.key \
-#  --signer-serial=${OSCONFIG}/ca.serial.txt \
-#  --hostnames='*.${DOMAIN}' \
+#  --signer-cert=${OMASTER}/ca.crt \
+#  --signer-key=${OMASTER}/ca.key \
+#  --signer-serial=${OMASTER}/ca.serial.txt \
+#  --hostnames='*.${BASE_DOMAIN}' \
 #  --cert=routerdef.crt --key=routerdef.key
-#cat routerdef.crt routerdef.key ${OSCONFIG}/ca.crt > routerdef.router.pem
+#cat routerdef.crt routerdef.key ${OMASTER}/ca.crt > routerdef.router.pem
 #oadm router \
 #  --default-cert=routerdef.router.pem \
 #  --images='registry.access.redhat.com/openshift3/ose-${component}:${version}' \

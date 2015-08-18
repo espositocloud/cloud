@@ -33,7 +33,7 @@ coreos:
       ExecStart=/opt/bin/setup-network-environment
       # Generate OpenShift node configurations
       WorkingDirectory=/opt/bin
-      ExecStartPre=/usr/bin/mkdir -p ${OSCONFIG}
+      ExecStartPre=/usr/bin/mkdir -p ${ONODE}
       ExecStartPre=/opt/bin/wufae /opt/bin/openshift
       ExecStartPre=/usr/bin/chown root:root /opt/bin/openshift
       ExecStartPre=/usr/bin/chmod +x /opt/bin/openshift
@@ -41,12 +41,12 @@ coreos:
       ExecStartPre=/usr/bin/ln -s /opt/bin/openshift /opt/bin/oc
       # wait for master config
       ExecStartPre=/opt/bin/wufae ${HOME}/master/master-config.yaml
-      ExecStartPre=/usr/bin/mv ${HOME}/master ${OSCONFIG}/
-      ExecStartPre=/usr/bin/chown -R root:root ${OSCONFIG}/
+      ExecStartPre=/usr/bin/mv ${HOME}/master/* ${OMASTER}/
+      ExecStartPre=/usr/bin/chown -R root:root ${OMASTER}/
       ExecStartPre=/opt/bin/oadm create-node-config \
       --master=https://${MASTER_IP}:8443 \
       --dns-ip=${MASTER_IP} \
-      --node-dir=${OSCONFIG}/node \
+      --node-dir=${ONODE} \
       --node=$private_ipv4 \
       --hostnames=$private_ipv4 \
       --listen=https://0.0.0.0:10250 \
@@ -76,7 +76,7 @@ coreos:
       EnvironmentFile=/etc/network-environment
       WorkingDirectory=/opt/bin
       ExecStart=/opt/bin/openshift start node \
-      --config=${OSCONFIG}/node/node-config.yaml
+      --config=${ONODE}/node-config.yaml
       Restart=always
       RestartSec=10
 write-files:
