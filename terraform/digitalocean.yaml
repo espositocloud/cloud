@@ -24,11 +24,13 @@ resource:
         HOME: /home/core
         OMASTER: ${var.OMASTER}
         SSH_PUBKEY: ${file("${var.SSH_PUBKEY_PATH}")}
+        BASE_DOMAIN: ${var.BASE_DOMAIN}
 
     node_conf:
       filename: terraform/node.yaml
       vars:
         HOME: /home/core
+        OMASTER: ${var.OMASTER}
         ONODE: ${var.ONODE}
         MASTER_IP: ${digitalocean_droplet.master.ipv4_address_private}
         SSH_PUBKEY: ${file("${var.SSH_PUBKEY_PATH}")}

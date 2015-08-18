@@ -29,7 +29,7 @@ compile:
 
 c clean soft-clean:
 	@rm -rf \
-		terraform* \
+		terraform.* \
 		${CACHE}/{master,node}.tar.gz \
 		${CACHE}/master/ \
 		${CACHE}/id_*
