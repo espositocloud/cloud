@@ -37,8 +37,8 @@ coreos:
       ExecStartPre=/opt/bin/wufae /opt/bin/openshift
       ExecStartPre=/usr/bin/chown root:root /opt/bin/openshift
       ExecStartPre=/usr/bin/chmod +x /opt/bin/openshift
-      ExecStartPre=/usr/bin/ln -s /opt/bin/openshift /opt/bin/oadm
-      ExecStartPre=/usr/bin/ln -s /opt/bin/openshift /opt/bin/oc
+      ExecStartPre=/usr/bin/ln -sf /opt/bin/openshift /opt/bin/oadm
+      ExecStartPre=/usr/bin/ln -sf /opt/bin/openshift /opt/bin/oc
       # wait for master config
       ExecStartPre=/opt/bin/wufae ${HOME}/master/master-config.yaml
       ExecStartPre=/usr/bin/mv ${HOME}/master/* ${OMASTER}/
