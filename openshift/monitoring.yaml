@@ -200,12 +200,22 @@ objects:
   apiVersion: v1
   kind: Route
   metadata:
+    name: influxdb-ui
+  spec:
+    host: influxdb-ui.${BASE_DOMAIN}
+    to:
+      kind: Service
+      name: influxdb-ui
+-
+  apiVersion: v1
+  kind: Route
+  metadata:
     name: influxdb
   spec:
     host: influxdb.${BASE_DOMAIN}
     to:
       kind: Service
-      name: influxdb-ui
+      name: influxdb
 -
   apiVersion: v1
   kind: Route
