@@ -21,7 +21,7 @@ delete destroy: compile
 compile:
 	@mkdir -p ${CACHE}
 	@remarshal \
-		-if yaml -i platform/digitalocean.yaml \
+		-if yaml -i terraform/digitalocean.yaml \
 		-of json -o terraform.tf.json
 	@remarshal \
 		-if yaml -i vars.yaml \
@@ -81,4 +81,4 @@ apps-delete:
 	@oc delete all -l app=gf
 
 create-apps:
-	@oc new-app -f services/monitoring.yaml -p SERVER_NAME=befaircloud.me
+	@oc new-app -f openshift/monitoring.yaml -p SERVER_NAME=${BASE_DOMAIN}

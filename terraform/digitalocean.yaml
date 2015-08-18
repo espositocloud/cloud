@@ -19,14 +19,14 @@ provider:
 resource:
   template_file:
     master_conf:
-      filename: platform/master.yaml
+      filename: terraform/master.yaml
       vars:
         HOME: /home/core
         OMASTER: ${var.OMASTER}
         SSH_PUBKEY: ${file("${var.SSH_PUBKEY_PATH}")}
 
     node_conf:
-      filename: platform/node.yaml
+      filename: terraform/node.yaml
       vars:
         HOME: /home/core
         ONODE: ${var.ONODE}
@@ -114,7 +114,7 @@ output:
       external entrypoint -- http://${digitalocean_droplet.nodes.0.ipv4_address}
   todo1:
     value: |
-      scp -r -i ${var.SSH_PRIVKEY_PATH} -o StrictHostKeyChecking=no apps core@${digitalocean_droplet.master.ipv4_address}:./; \
+      scp -r -i ${var.SSH_PRIVKEY_PATH} -o StrictHostKeyChecking=no openshift core@${digitalocean_droplet.master.ipv4_address}:./; \
       scp -r -i ${var.SSH_PRIVKEY_PATH} -o StrictHostKeyChecking=no core@${digitalocean_droplet.master.ipv4_address}:./master .cache/; \
       scp -r -i ${var.SSH_PRIVKEY_PATH} -o StrictHostKeyChecking=no .cache/master core@${digitalocean_droplet.nodes.0.ipv4_address}:./
   todo1bis:
