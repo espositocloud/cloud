@@ -3,7 +3,7 @@ variable:
   SSH_PRIVKEY_PATH: { default: .cache/id_rsa }
   SSH_PUBKEY_PATH:  { default: .cache/id_rsa.pub }
   DO_TOKEN:       {}
-  DO_DOMAIN:      { default: localhost }
+  BASE_DOMAIN:    { default: localhost }
   DO_IMAGE:       { default: coreos-alpha }
   DO_REGION:      { default: fra1 }
   DO_MASTER_SIZE: { default: 1gb }
@@ -93,7 +93,7 @@ resource:
 
   digitalocean_domain:
     cloud:
-      name: ${var.DO_DOMAIN}
+      name: ${var.BASE_DOMAIN}
       ip_address: ${digitalocean_droplet.nodes.0.ipv4_address}
       depends_on:
       - digitalocean_droplet.nodes

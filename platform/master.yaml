@@ -115,3 +115,4 @@ write-files:
 
     export KUBECONFIG=${OSCONFIG}/master/admin.kubeconfig
     export CURL_CA_BUNDLE=${OSCONFIG}/master/ca.crt
+    export BASE_DOMAIN=${BASE_DOMAIN}
