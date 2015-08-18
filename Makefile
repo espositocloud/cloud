@@ -18,16 +18,7 @@ delete destroy: compile
 	@terraform plan -destroy
 	@terraform destroy
 
-compile:
-	@mkdir -p ${CACHE}
-	@remarshal \
-		-if yaml -i terraform/digitalocean.yaml \
-		-of json -o terraform.tf.json
-	@remarshal \
-		-if yaml -i vars.yaml \
-		-of json -o terraform.tfvars
-
-c clean soft-clean:
+clean soft-clean:
 	@rm -rf \
 		terraform.* \
 		${CACHE}/{master,node}.tar.gz \
@@ -38,6 +29,15 @@ full-clean: clean
 	@rm -rf \
 		${BINPATH}/terraform* \
 		.cache
+
+compile:
+	@mkdir -p ${CACHE}
+	@remarshal \
+		-if yaml -i terraform/digitalocean.yaml \
+		-of json -o terraform.tf.json
+	@remarshal \
+		-if yaml -i vars.yaml \
+		-of json -o terraform.tfvars
 
 build:
 	@ssh-keygen -b 4096 -t rsa -f ${CACHE}/id_rsa -N ''
@@ -61,24 +61,7 @@ install:
 	@ln -sf ${CACHE}/openshift ${BINPATH}/oc
 	@ln -sf ${CACHE}/openshift ${BINPATH}/oadm
 
-future-upgrade:
-	@echo 'Update Go dependencies'
-	@go get -u github.com/dbohdan/remarshal
-	@go get -u github.com/hashicorp/terraform
-	@go get -u github.com/openshift/origin
-
 # Others
 # https://terraform.io/docs/commands/graph.html
 infrastructure-graph:
 	@terraform graph | dot -Tsvg > graph.svg
-
-apps apps-status:
-	@oc get apps
-#oc describe pods liveness-http
-
-apps-delete:
-	@oc stop all -l app=gf
-	@oc delete all -l app=gf
-
-create-apps:
-	@oc new-app -f openshift/monitoring.yaml -p SERVER_NAME=${BASE_DOMAIN}
