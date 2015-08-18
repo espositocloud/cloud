@@ -6,8 +6,9 @@
 # https://docs.openshift.org/latest/dev_guide/deployments.html
 #oc policy add-role-to-user admin admin -n gf-project
 #oc policy add-role-to-user cluster-admin admin 
+oc delete all -l app=gf
 oc new-app -f gasistafelice.yaml \
--p SERVER_NAME=gf.befaircloud.me
+-p SERVER_NAME=gf.${BASE_DOMAIN}
 watch -n 1 oc get pods
 
 oc exec $(oc get pods | grep back | awk '{print $1}') -- psql -f /code/gasistafelice/fixtures/test.sql
