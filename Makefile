@@ -2,7 +2,7 @@ TERRAFORM_VERSION := 0.6.3
 OPENSHIFT_VERSION := 1.0.4-757efd9
 
 #export GOPATH := ${GOPATH}
-CACHE := .cache
+CACHE := `pwd`/.cache
 BINPATH := ${GOPATH}/bin
 export PATH := ${GOPATH}/bin:${PATH}
 TERRAFORM_URL := https://dl.bintray.com/mitchellh/terraform/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
@@ -57,6 +57,9 @@ install:
 	@curl -L -o ${CACHE}/openshift-origin.tar.gz   -z ${CACHE}/openshift-origin.tar.gz   ${OPENSHIFT_URL}
 	@tar -xf ${CACHE}/openshift-origin.tar.gz -C ${CACHE}/
 	@unzip -o "${CACHE}/*.zip" -d ${BINPATH}/
+	@ln -sf ${CACHE}/openshift ${BINPATH}/openshift
+	@ln -sf ${CACHE}/openshift ${BINPATH}/oc
+	@ln -sf ${CACHE}/openshift ${BINPATH}/oadm
 
 future-upgrade:
 	@echo 'Update Go dependencies'
