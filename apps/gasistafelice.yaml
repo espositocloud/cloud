@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Template
 metadata:
-  name: gasistafelice-template
+  name: gasistafelice
   annotations:
     description: Gasista Felice is the platform for DES Macerata project
     tags: app,gas,des
@@ -232,18 +232,18 @@ objects:
         -
           name: proxy
           image: kobe25/gasistafelice-proxy
-          livenessProbe:
-            initialDelaySeconds: 10
-            timeoutSeconds: 1
-            httpGet:
-              path: /
-              port: insecure-port
-          readinessProbe:
-            initialDelaySeconds: 10
-            timeoutSeconds: 1
-            httpGet:
-              path: /
-              port: insecure-port
+#          livenessProbe:
+#            initialDelaySeconds: 10
+#            timeoutSeconds: 1
+#            httpGet:
+#              path: /
+#              port: insecure-port
+#          readinessProbe:
+#            initialDelaySeconds: 10
+#            timeoutSeconds: 1
+#            httpGet:
+#              path: /
+#              port: insecure-port
           securityContext:
             runAsUser: 104
             privileged: true
