@@ -1,0 +1,5 @@
+#!/bin/bash
+
+oc new-app -f monitoring.yaml \
+-p SERVER_NAME=${BASE_DOMAIN}
+watch -n 1 oc get pods
