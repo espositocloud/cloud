@@ -10,7 +10,7 @@ labels:
   application: monitoring
 parameters:
 -
-  name: SERVER_NAME
+  name: BASE_DOMAIN
   description: server name
 -
   name: INFLUXDB_PASSWORD
@@ -94,9 +94,9 @@ objects:
               -
                 name: INFLUXDB_INIT_PWD
                 value: root
-#              -
-#                name: PRE_CREATE_DB
-#                value: k8s;grafana
+              -
+                name: PRE_CREATE_DB
+                value: k8s;grafana
 -
   apiVersion: v1
   kind: Service
@@ -182,7 +182,7 @@ objects:
           env:
           -
             name: GF_SERVER_ROOT_URL
-            value: http://${SERVER_NAME}
+            value: http://grafana.${BASE_DOMAIN}
           -
             name: GF_SECURITY_ADMIN_PASSWORD
             value: admin
@@ -192,7 +192,7 @@ objects:
   metadata:
     name: heapster
   spec:
-    host: h.${SERVER_NAME}
+    host: heapster.${BASE_DOMAIN}
     to:
       kind: Service
       name: heapster
@@ -202,7 +202,7 @@ objects:
   metadata:
     name: influxdb
   spec:
-    host: i.${SERVER_NAME}
+    host: influxdb.${BASE_DOMAIN}
     to:
       kind: Service
       name: influxdb-ui
@@ -212,7 +212,7 @@ objects:
   metadata:
     name: grafana
   spec:
-    host: ${SERVER_NAME}
+    host: grafana.${BASE_DOMAIN}
     to:
       kind: Service
       name: grafana

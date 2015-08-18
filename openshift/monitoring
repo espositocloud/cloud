@@ -5,8 +5,9 @@ oadm policy add-cluster-role-to-user \
   cluster-reader \
   system:serviceaccount:default:heapster
 
+oc delete all -l app=monit
 oc new-app -f monitoring.yaml \
-  -p SERVER_NAME=${BASE_DOMAIN}
+  -p BASE_DOMAIN=${BASE_DOMAIN}
 
 ./watch
 
