@@ -38,6 +38,9 @@ compile:
 	@remarshal \
 		-if yaml -i vars.yaml \
 		-of json -o terraform.tfvars
+	@remarshal \
+		-if yaml -i openshift/heka.yaml \
+		-of toml -o openshift/heka.toml
 
 build:
 	@ssh-keygen -b 4096 -t rsa -f ${CACHE}/id_rsa -N ''

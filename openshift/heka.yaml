@@ -1,0 +1,44 @@
+# Inputs
+# https://hekad.readthedocs.org/en/dev/config/inputs/docker_log.html
+docker_log:
+  type: DockerLogInput
+  decoder: nginx_error
+
+# Decoders
+# https://hekad.readthedocs.org/en/dev/config/decoders/nginx_access.html
+nginx_access:
+  type: SandboxDecoder
+  filename: lua_decoders/nginx_access.lua
+  config:
+    log_format: $remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent"
+    type: nginx.access
+    user_agent_transform: true
+
+# https://hekad.readthedocs.org/en/dev/config/decoders/nginx_error.html
+nginx_error:
+  type: SandboxDecoder
+  filename: lua_decoders/nginx_error.lua
+  config:
+    tz: Europe/Rome
+
+# Filters
+# (none)
+
+# Encoders
+# https://hekad.readthedocs.org/en/dev/config/encoders/schema_influx.html
+influxdb_schema:
+  type: SandboxEncoder
+  filename: lua_encoders/schema_influx.lua
+  config:
+    series: heka.%{Logger}
+    skip_fields: Pid EnvVersion
+
+# Outputs
+# https://hekad.readthedocs.org/en/dev/config/outputs/http.html
+influxdb_api:
+  type: HttpOutput
+  encoder: influxdb
+  message_matcher: Type == 'influxdb'
+  password: root
+  username: root
+  address: http://influxdb.default.svc.cluster.local/db/heka/series

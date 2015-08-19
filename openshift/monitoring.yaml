@@ -96,7 +96,7 @@ objects:
                 value: root
               -
                 name: PRE_CREATE_DB
-                value: k8s;grafana
+                value: k8s;heka;grafana
 -
   apiVersion: v1
   kind: Service
@@ -134,7 +134,7 @@ objects:
           image: kubernetes/heapster:v0.17.0
           args:
           - -port=8082
-          - -source=kubernetes:https://openshift.default.svc.cluster.local
+          - -source=kubernetes:https://openshift.default.svc.cluster.local?auth=&insecure=true&useServiceAccount=true
           - -sink=influxdb:http://influxdb.default.svc.cluster.local
           - -logtostderr=true
           ports:
