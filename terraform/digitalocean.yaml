@@ -1,16 +1,17 @@
 variable:
-  DO_SSH_ID:      { default: core }
+  BASE_DOMAIN:      { default: befaircloud.me }
+  NODES:            { default: 3 }
   SSH_PRIVKEY_PATH: { default: .cache/id_rsa }
   SSH_PUBKEY_PATH:  { default: .cache/id_rsa.pub }
-  DO_TOKEN:       {}
-  BASE_DOMAIN:    { default: befaircloud.me }
-  DO_IMAGE:       { default: coreos-alpha }
-  DO_REGION:      { default: fra1 }
-  DO_MASTER_SIZE: { default: 1gb }
-  DO_NODE_SIZE:   { default: 2gb }
-  NODES:          { default: 3 }
-  OMASTER:        { default: /opt/bin/openshift.local.config/master }
-  ONODE:          { default: /opt/bin/openshift.local.config/node }
+  OMASTER:          { default: /opt/bin/openshift.local.config/master }
+  ONODE:            { default: /opt/bin/openshift.local.config/node }
+  # Provider specific
+  DO_TOKEN:         {}
+  DO_SSH_ID:        { default: core }
+  DO_IMAGE:         { default: coreos-alpha }
+  DO_REGION:        { default: fra1 }
+  DO_MASTER_SIZE:   { default: 1gb }
+  DO_NODE_SIZE:     { default: 2gb }
 
 provider:
   digitalocean:
