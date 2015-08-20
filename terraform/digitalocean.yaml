@@ -58,20 +58,16 @@ resource:
         key_file: .cache/id
       provisioner:
         file:
-          source: .cache/master.tar.gz
-          destination: /home/core/master.tar.gz
+          source: .cache/pkg.tar.gz
+          destination: /home/core/pkg.tar.gz
         remote-exec:
           inline:
-          - /opt/bin/wufae /home/core/master.tar.gz
           - sudo mkdir -p /opt/{bin,lib,share}/
-          - tar -xf /home/core/master.tar.gz -C /home/core
+          - tar -xf /home/core/pkg.tar.gz -C /home/core
+          - sudo mv /home/core/.cache/setup-network-environment /opt/bin/
+          - sudo mv /home/core/.cache/openshift /opt/bin/
           - mv /home/core/openshift/* /home/core/
-          - sudo mv /home/core/.cache/bin/* /opt/bin/
-          - sudo mv /home/core/.cache/lib/* /opt/lib/
-          - sudo mv /home/core/.cache/share/* /opt/share/
-          - rm -rf /home/core/.cache/{bin,lib,share}/
-          - sudo mv /home/core/.cache/* /opt/bin/
-          - rm -f /home/core/master.tar.gz
+          - rm -rf /home/core/{pkg.tar.gz,.cache,openshift}
 
     nodes:
       count: ${var.NODES}
@@ -92,14 +88,19 @@ resource:
         key_file: .cache/id
       provisioner:
         file:
-          source: .cache/node.tar.gz
-          destination: /home/core/node.tar.gz
+          source: .cache/pkg.tar.gz
+          destination: /home/core/pkg.tar.gz
         remote-exec:
           inline:
-          - /opt/bin/wufae /home/core/node.tar.gz
-          - tar -xf /home/core/node.tar.gz -C /home/core
-          - sudo mv /home/core/.cache/* /opt/bin
-          - rm -f /home/core/node.tar.gz
+          - sudo mkdir -p /opt/{bin,lib,share}/
+          - tar -xf /home/core/pkg.tar.gz -C /home/core
+          - sudo mv /home/core/.cache/setup-network-environment /opt/bin/
+          - sudo mv /home/core/.cache/openshift /opt/bin/
+          - sudo mv /home/core/.cache/bin/*   /opt/bin/
+          - sudo mv /home/core/.cache/lib/*   /opt/lib/
+          - sudo mv /home/core/.cache/share/* /opt/share/
+          - mv /home/core/.cache/heka.toml /home/core/heka.toml
+          - rm -rf /home/core/{pkg.tar.gz,.cache,openshift}
 
   digitalocean_domain:
     cloud:
