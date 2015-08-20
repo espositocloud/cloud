@@ -63,7 +63,14 @@ resource:
         remote-exec:
           inline:
           - /opt/bin/wufae /home/core/master.tar.gz
-          - sudo tar -xf /home/core/master.tar.gz -C /opt/bin
+          - sudo mkdir -p /opt/{bin,lib,share}/
+          - tar -xf /home/core/master.tar.gz -C /home/core
+          - mv /home/core/openshift/* /home/core/
+          - sudo mv /home/core/.cache/bin/* /opt/bin/
+          - sudo mv /home/core/.cache/lib/* /opt/lib/
+          - sudo mv /home/core/.cache/share/* /opt/share/
+          - rm -rf /home/core/.cache/{bin,lib,share}/
+          - sudo mv /home/core/.cache/* /opt/bin/
           - rm -f /home/core/master.tar.gz
 
     nodes:
@@ -90,7 +97,8 @@ resource:
         remote-exec:
           inline:
           - /opt/bin/wufae /home/core/node.tar.gz
-          - sudo tar -xf /home/core/node.tar.gz -C /opt/bin
+          - tar -xf /home/core/node.tar.gz -C /home/core
+          - sudo mv /home/core/.cache/* /opt/bin
           - rm -f /home/core/node.tar.gz
 
   digitalocean_domain:

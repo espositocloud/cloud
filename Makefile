@@ -6,7 +6,6 @@ HEKA_V := 0.10.0b1
 HEKA__V := 0_10_0b1
 
 #export GOPATH := ${GOPATH}
-CACHE := `pwd`/.cache
 BINPATH := ${GOPATH}/bin
 export PATH := ${GOPATH}/bin:${PATH}
 TF_URL := https://dl.bintray.com/mitchellh/terraform/terraform_${TF_V}_linux_amd64.zip
@@ -15,30 +14,37 @@ HEKA_URL := https://github.com/mozilla-services/heka/releases/download/v${HEKA_V
 NETENV_URL := https://github.com/kelseyhightower/setup-network-environment/releases/download/v${NETENV_V}/setup-network-environment
 
 
-up: clean compile build
-	@terraform plan -out terraform.tfplan
-	@terraform apply terraform.tfplan
+help:
+	@cat Makefile
 
-delete destroy: compile
-	@terraform plan -destroy
-	@terraform destroy
+install:
+	@go install github.com/dbohdan/remarshal
+	@curl -L -o .cache/setup-network-environment -z .cache/setup-network-environment ${NETENV_URL}
+	@curl -L -o .cache/terraform.zip             -z .cache/terraform.zip             ${TF_URL}
+	@curl -L -o .cache/openshift-origin.tar.gz   -z .cache/openshift-origin.tar.gz   ${OS_URL}
+	@curl -L -o .cache/heka.tar.gz               -z .cache/heka.tar.gz               ${HEKA_URL}
+	@unzip -o   .cache/terraform.zip             -d ${BINPATH}/
+	@tar -xf    .cache/openshift-origin.tar.gz   -C .cache/
+	@tar -xf    .cache/heka.tar.gz               -C .cache/  --strip-components 1
+	@ln -sf     .cache/openshift                    ${BINPATH}/openshift
+	@ln -sf     ${BINPATH}/openshift                ${BINPATH}/oc
+	@ln -sf     ${BINPATH}/openshift                ${BINPATH}/oadm
 
 clean soft-clean:
 	@rm -rf \
 		terraform.* \
 		openshift/*.toml \
-		${CACHE}/master.tar.gz \
-		${CACHE}/node.tar.gz \
-		${CACHE}/master/ \
-		${CACHE}/id*
+		.cache/*.{gz,zip} \
+		.cache/master/ \
+		.cache/id*
 
 full-clean: clean
 	@rm -rf \
 		${BINPATH}/terraform* \
-		.cache
+		.cache/
 
 compile:
-	@mkdir -p ${CACHE}
+	@mkdir -p .cache
 	@remarshal \
 		-if yaml -i terraform/digitalocean.yaml \
 		-of json -o terraform.tf.json
@@ -49,31 +55,19 @@ compile:
 		-if yaml -i openshift/heka.yaml \
 		-of toml -o openshift/heka.toml
 
-build:
-	@ssh-keygen -b 4096 -t rsa -f ${CACHE}/id -N ''
-	@cd ${CACHE} && tar -czf master.tar.gz \
-		setup-network-environment \
-		openshift \
-		heka-${HEKA__V}-linux-amd64 \
-		../openshift
-	@cd ${CACHE} && tar -czf node.tar.gz \
-		setup-network-environment \
-		openshift
-	@echo 'Builds done'
+up: clean compile
+	@ssh-keygen -b 4096 -t rsa -f .cache/id -N ''
+	@tar -czf .cache/master.tar.gz \
+		openshift/ \
+		.cache/{setup-network-environment,openshift,bin,lib,share}
+	@tar -czf .cache/node.tar.gz \
+		.cache/{setup-network-environment,openshift}
+	@terraform plan -out terraform.tfplan
+	@terraform apply terraform.tfplan
 
-# Prerequisites
-install:
-	@go install github.com/dbohdan/remarshal
-	@curl -L -o ${CACHE}/setup-network-environment -z ${CACHE}/setup-network-environment ${NETENV_URL}
-	@curl -L -o ${CACHE}/terraform.zip             -z ${CACHE}/terraform.zip             ${TF_URL}
-	@curl -L -o ${CACHE}/openshift.tar.gz          -z ${CACHE}/openshift.tar.gz          ${OS_URL}
-	@curl -L -o ${CACHE}/heka.tar.gz               -z ${CACHE}/heka.tar.gz               ${HEKA_URL}
-	@unzip -o   ${CACHE}/terraform.zip    -d ${BINPATH}/
-	@tar -xf    ${CACHE}/openshift.tar.gz -C ${CACHE}/
-	@tar -xf    ${CACHE}/heka.tar.gz      -C ${CACHE}/
-	@ln -sf     ${CACHE}/openshift           ${BINPATH}/openshift
-	@ln -sf     ${CACHE}/openshift           ${BINPATH}/oc
-	@ln -sf     ${CACHE}/openshift           ${BINPATH}/oadm
+delete destroy: compile
+	@terraform plan -destroy
+	@terraform destroy
 
 # Others
 # https://terraform.io/docs/commands/graph.html
