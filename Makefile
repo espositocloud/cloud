@@ -50,7 +50,9 @@ build:
 	@ssh-keygen -b 4096 -t rsa -f ${CACHE}/id_rsa -N ''
 	@cd ${CACHE} && tar -czf master.tar.gz \
 		setup-network-environment \
-		openshift
+		openshift \
+		heka-${HEKA__VERSION}-linux-amd64 \
+		../openshift
 	@cd ${CACHE} && tar -czf node.tar.gz \
 		setup-network-environment \
 		openshift

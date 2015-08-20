@@ -110,20 +110,17 @@ resource:
       value: ${digitalocean_droplet.nodes.0.ipv4_address}
 
 output:
-  openshift:
+  step1:
     value: |
-      openshift dashboard -- https://${digitalocean_droplet.master.ipv4_address}:8443
-      log to node-0 -- ssh -i ${var.SSH_PRIVKEY_PATH} -o StrictHostKeyChecking=no core@${digitalocean_droplet.nodes.0.ipv4_address}
-      external entrypoint -- http://${digitalocean_droplet.nodes.0.ipv4_address}
-  todo1:
-    value: |
-      scp -r -i ${var.SSH_PRIVKEY_PATH} -o StrictHostKeyChecking=no openshift core@${digitalocean_droplet.master.ipv4_address}:./; \
       scp -r -i ${var.SSH_PRIVKEY_PATH} -o StrictHostKeyChecking=no core@${digitalocean_droplet.master.ipv4_address}:./master .cache/; \
       scp -r -i ${var.SSH_PRIVKEY_PATH} -o StrictHostKeyChecking=no .cache/master core@${digitalocean_droplet.nodes.0.ipv4_address}:./
-  todo1bis:
+  step1-bis:
     value: |
       scp -r -i ${var.SSH_PRIVKEY_PATH} -o StrictHostKeyChecking=no .cache/master core@${digitalocean_droplet.nodes.1.ipv4_address}:./; \
       scp -r -i ${var.SSH_PRIVKEY_PATH} -o StrictHostKeyChecking=no .cache/master core@${digitalocean_droplet.nodes.2.ipv4_address}:./
-  todo2:
+  step2:
     value: |
       log to master -- ssh -i ${var.SSH_PRIVKEY_PATH} -o StrictHostKeyChecking=no core@${digitalocean_droplet.master.ipv4_address}
+      log to node-0 -- ssh -i ${var.SSH_PRIVKEY_PATH} -o StrictHostKeyChecking=no core@${digitalocean_droplet.nodes.0.ipv4_address}
+      dashboard -- https://${digitalocean_droplet.master.ipv4_address}:8443
+      entrypoint -- http://${var.BASE_DOMAIN}
