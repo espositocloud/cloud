@@ -2,7 +2,8 @@
 # https://hekad.readthedocs.org/en/dev/config/inputs/docker_log.html
 docker_log:
   type: DockerLogInput
-  decoder: nginx_error
+  endpoint: unix:///var/run/docker.sock
+  decoder: nginx_access
 
 # Decoders
 # https://hekad.readthedocs.org/en/dev/config/decoders/nginx_access.html
@@ -10,19 +11,34 @@ nginx_access:
   type: SandboxDecoder
   filename: lua_decoders/nginx_access.lua
   config:
-    log_format: $remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent"
+    #log_format: $remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent"
+    log_format: $remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" "$http_x_forwarded_for"
     type: nginx.access
     user_agent_transform: true
 
 # https://hekad.readthedocs.org/en/dev/config/decoders/nginx_error.html
-nginx_error:
-  type: SandboxDecoder
-  filename: lua_decoders/nginx_error.lua
-  config:
-    tz: Europe/Rome
+#nginx_error:
+#  type: SandboxDecoder
+#  filename: lua_decoders/nginx_error.lua
+#  config:
+#    type: nginx.error
+#    tz: Europe/Rome
 
 # Filters
-# (none)
+# https://hekad.readthedocs.org/en/dev/config/filters/http_status.html
+#
+#http_status: ##FxaAuthServer
+#  type: SandboxFilter
+#  filename: lua_filters/http_status.lua
+#  ticker_interval: 60
+#  preserve_data: true
+#  message_matcher: Logger == 'nginx.access' && Type == 'fxa-auth-server'
+#  config:
+#    sec_per_row: 60
+#    rows: 1440
+#    anomaly_config: roc("HTTP Status", 2, 15, 0, 1.5, true, false) roc("HTTP Status", 4, 15, 0, 1.5, true, false) mww_nonparametric("HTTP Status", 5, 15, 10, 0.8)
+#    alert_throttle: 300
+#    preservation_version: 0
 
 # Encoders
 # https://hekad.readthedocs.org/en/dev/config/encoders/schema_influx.html
@@ -31,14 +47,15 @@ influxdb_schema:
   filename: lua_encoders/schema_influx.lua
   config:
     series: heka.%{Logger}
-    skip_fields: Pid EnvVersion
+    #skip_fields: '"Pid EnvVersion"'
 
 # Outputs
 # https://hekad.readthedocs.org/en/dev/config/outputs/http.html
 influxdb_api:
   type: HttpOutput
-  encoder: influxdb
-  message_matcher: Type == 'influxdb'
-  password: root
-  username: root
+  encoder: influxdb_schema
+  #message_matcher: Type == 'influxdb'
   address: http://influxdb.default.svc.cluster.local/db/heka/series
+  method: POST
+  username: root
+  password: root
