@@ -1,4 +1,4 @@
-NETENV := 1.0.0
+NETENV_V := 1.0.0
 TF_V := 0.6.3
 OS_V := 1.0.4
 OS_COMMIT := 757efd9
