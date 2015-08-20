@@ -1,0 +1,3 @@
+#!/bin/bash
+
+hekad -config=/home/core/heka.toml

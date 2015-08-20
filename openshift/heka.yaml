@@ -1,3 +1,8 @@
+# Global options
+hekad:
+  base_dir: /var/cache/hekad
+  share_dir: /opt/share/heka
+
 # Inputs
 # https://hekad.readthedocs.org/en/dev/config/inputs/docker_log.html
 docker_log:
@@ -54,7 +59,7 @@ influxdb_schema:
 influxdb_api:
   type: HttpOutput
   encoder: influxdb_schema
-  #message_matcher: Type == 'influxdb'
+  message_matcher: Type == 'influxdb'
   address: http://influxdb.default.svc.cluster.local/db/heka/series
   method: POST
   username: root
