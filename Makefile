@@ -1,12 +1,16 @@
 TERRAFORM_VERSION := 0.6.3
-OPENSHIFT_VERSION := 1.0.4-757efd9
+OPENSHIFT_VERSION := 1.0.4
+OPENSHIFT_COMMIT := 757efd9
+HEKA_VERSION := 0.10.0b1
+HEKA__VERSION := 0_10_0b1
 
 #export GOPATH := ${GOPATH}
 CACHE := `pwd`/.cache
 BINPATH := ${GOPATH}/bin
 export PATH := ${GOPATH}/bin:${PATH}
 TERRAFORM_URL := https://dl.bintray.com/mitchellh/terraform/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
-OPENSHIFT_URL := https://github.com/openshift/origin/releases/download/v1.0.4/openshift-origin-v${OPENSHIFT_VERSION}-linux-amd64.tar.gz
+OPENSHIFT_URL := https://github.com/openshift/origin/releases/download/v${OPENSHIFT_VERSION}/openshift-origin-v${OPENSHIFT_VERSION}-${OPENSHIFT_COMMIT}-linux-amd64.tar.gz
+HEKA_URL := https://github.com/mozilla-services/heka/releases/download/v${HEKA_VERSION}/heka-${HEKA__VERSION}-linux-amd64.tar.gz
 SETUP_NET_ENV_URL := https://github.com/kelseyhightower/setup-network-environment/releases/download/v1.0.0/setup-network-environment
 
 
@@ -57,12 +61,14 @@ install:
 	@go install github.com/dbohdan/remarshal
 	@curl -L -o ${CACHE}/terraform.zip             -z ${CACHE}/terraform.zip             ${TERRAFORM_URL}
 	@curl -L -o ${CACHE}/setup-network-environment -z ${CACHE}/setup-network-environment ${SETUP_NET_ENV_URL}
-	@curl -L -o ${CACHE}/openshift-origin.tar.gz   -z ${CACHE}/openshift-origin.tar.gz   ${OPENSHIFT_URL}
-	@tar -xf ${CACHE}/openshift-origin.tar.gz -C ${CACHE}/
-	@unzip -o "${CACHE}/*.zip" -d ${BINPATH}/
-	@ln -sf ${CACHE}/openshift ${BINPATH}/openshift
-	@ln -sf ${CACHE}/openshift ${BINPATH}/oc
-	@ln -sf ${CACHE}/openshift ${BINPATH}/oadm
+	@curl -L -o ${CACHE}/openshift.tar.gz          -z ${CACHE}/openshift.tar.gz          ${OPENSHIFT_URL}
+	@curl -L -o ${CACHE}/heka.tar.gz               -z ${CACHE}/heka.tar.gz               ${HEKA_URL}
+	@unzip -o   ${CACHE}/terraform.zip    -d ${BINPATH}/
+	@tar -xf    ${CACHE}/openshift.tar.gz -C ${CACHE}/
+	@tar -xf    ${CACHE}/heka.tar.gz      -C ${CACHE}/
+	@ln -sf     ${CACHE}/openshift           ${BINPATH}/openshift
+	@ln -sf     ${CACHE}/openshift           ${BINPATH}/oc
+	@ln -sf     ${CACHE}/openshift           ${BINPATH}/oadm
 
 # Others
 # https://terraform.io/docs/commands/graph.html
