@@ -3,7 +3,7 @@
 ---
 hostname: master
 ssh_authorized_keys:
-- ${SSH_PUBKEY}
+- ${SSH_PUBLIC_KEY}
 coreos:
   update:
     group: alpha

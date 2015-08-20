@@ -47,7 +47,7 @@ compile:
 		-of toml -o openshift/heka.toml
 
 build:
-	@ssh-keygen -b 4096 -t rsa -f ${CACHE}/id_rsa -N ''
+	@ssh-keygen -b 4096 -t rsa -f ${CACHE}/id -N ''
 	@cd ${CACHE} && tar -czf master.tar.gz \
 		setup-network-environment \
 		openshift \

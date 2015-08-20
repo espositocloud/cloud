@@ -1,17 +1,15 @@
 variable:
-  BASE_DOMAIN:      { default: befaircloud.me }
-  NODES:            { default: 3 }
-  SSH_PRIVKEY_PATH: { default: .cache/id_rsa }
-  SSH_PUBKEY_PATH:  { default: .cache/id_rsa.pub }
-  OMASTER:          { default: /opt/bin/openshift.local.config/master }
-  ONODE:            { default: /opt/bin/openshift.local.config/node }
+  BASE_DOMAIN:    { default: befaircloud.me }
+  NODES:          { default: 3 }
+  OMASTER:        { default: /opt/bin/openshift.local.config/master }
+  ONODE:          { default: /opt/bin/openshift.local.config/node }
   # Provider specific
-  DO_TOKEN:         {}
-  DO_SSH_ID:        { default: core }
-  DO_IMAGE:         { default: coreos-alpha }
-  DO_REGION:        { default: fra1 }
-  DO_MASTER_SIZE:   { default: 1gb }
-  DO_NODE_SIZE:     { default: 2gb }
+  DO_TOKEN:       {}
+  DO_SSH_ID:      { default: core }
+  DO_IMAGE:       { default: coreos-alpha }
+  DO_REGION:      { default: fra1 }
+  DO_MASTER_SIZE: { default: 1gb }
+  DO_NODE_SIZE:   { default: 2gb }
 
 provider:
   digitalocean:
@@ -24,7 +22,7 @@ resource:
       vars:
         HOME: /home/core
         OMASTER: ${var.OMASTER}
-        SSH_PUBKEY: ${file("${var.SSH_PUBKEY_PATH}")}
+        SSH_PUBLIC_KEY: ${file(".cache/id.pub")}
         BASE_DOMAIN: ${var.BASE_DOMAIN}
 
     node_conf:
@@ -34,14 +32,14 @@ resource:
         OMASTER: ${var.OMASTER}
         ONODE: ${var.ONODE}
         MASTER_IP: ${digitalocean_droplet.master.ipv4_address_private}
-        SSH_PUBKEY: ${file("${var.SSH_PUBKEY_PATH}")}
+        SSH_PUBLIC_KEY: ${file(".cache/id.pub")}
       depends_on:
       - digitalocean_droplet.master
 
   digitalocean_ssh_key:
     superuser:
       name: ${var.DO_SSH_ID}
-      public_key: ${file("${var.SSH_PUBKEY_PATH}")}
+      public_key: ${file(".cache/id.pub")}
   digitalocean_droplet:
     master:
       image: ${var.DO_IMAGE}
@@ -57,7 +55,7 @@ resource:
       - template_file.master_conf
       connection:
         user: core
-        key_file: ${var.SSH_PRIVKEY_PATH}
+        key_file: .cache/id
       provisioner:
         file:
           source: .cache/master.tar.gz
@@ -84,7 +82,7 @@ resource:
       - template_file.node_conf
       connection:
         user: core
-        key_file: ${var.SSH_PRIVKEY_PATH}
+        key_file: .cache/id
       provisioner:
         file:
           source: .cache/node.tar.gz
@@ -112,15 +110,15 @@ resource:
 output:
   step1:
     value: |
-      scp -r -i ${var.SSH_PRIVKEY_PATH} -o StrictHostKeyChecking=no core@${digitalocean_droplet.master.ipv4_address}:./master .cache/; \
-      scp -r -i ${var.SSH_PRIVKEY_PATH} -o StrictHostKeyChecking=no .cache/master core@${digitalocean_droplet.nodes.0.ipv4_address}:./
+      scp -r -i .cache/id -o StrictHostKeyChecking=no core@${digitalocean_droplet.master.ipv4_address}:./master .cache/; \
+      scp -r -i .cache/id -o StrictHostKeyChecking=no .cache/master core@${digitalocean_droplet.nodes.0.ipv4_address}:./
   step1-bis:
     value: |
-      scp -r -i ${var.SSH_PRIVKEY_PATH} -o StrictHostKeyChecking=no .cache/master core@${digitalocean_droplet.nodes.1.ipv4_address}:./; \
-      scp -r -i ${var.SSH_PRIVKEY_PATH} -o StrictHostKeyChecking=no .cache/master core@${digitalocean_droplet.nodes.2.ipv4_address}:./
+      scp -r -i .cache/id -o StrictHostKeyChecking=no .cache/master core@${digitalocean_droplet.nodes.1.ipv4_address}:./; \
+      scp -r -i .cache/id -o StrictHostKeyChecking=no .cache/master core@${digitalocean_droplet.nodes.2.ipv4_address}:./
   step2:
     value: |
-      log to master -- ssh -i ${var.SSH_PRIVKEY_PATH} -o StrictHostKeyChecking=no core@${digitalocean_droplet.master.ipv4_address}
-      log to node-0 -- ssh -i ${var.SSH_PRIVKEY_PATH} -o StrictHostKeyChecking=no core@${digitalocean_droplet.nodes.0.ipv4_address}
+      log to master -- ssh -i .cache/id -o StrictHostKeyChecking=no core@${digitalocean_droplet.master.ipv4_address}
+      log to node-0 -- ssh -i .cache/id -o StrictHostKeyChecking=no core@${digitalocean_droplet.nodes.0.ipv4_address}
       dashboard -- https://${digitalocean_droplet.master.ipv4_address}:8443
       entrypoint -- http://${var.BASE_DOMAIN}
