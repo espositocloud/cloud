@@ -148,13 +148,13 @@ objects:
           -
             name: PGPASSWORD
             value: ${POSTGRES_PASSWORD}
-          livenessProbe:
-            initialDelaySeconds: 15
-            timeoutSeconds: 1
-            exec:
-              command:
-              - cat
-              - /tmp/health
+#          livenessProbe:
+#            initialDelaySeconds: 15
+#            timeoutSeconds: 1
+#            exec:
+#              command:
+#              - cat
+#              - /tmp/health
           securityContext:
             runAsUser: 1000
             privileged: true
