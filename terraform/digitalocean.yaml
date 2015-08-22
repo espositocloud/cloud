@@ -99,7 +99,7 @@ resource:
           - sudo mv /home/core/.cache/bin/*   /opt/bin/
           - sudo mv /home/core/.cache/lib/*   /opt/lib/
           - sudo mv /home/core/.cache/share/* /opt/share/
-          - sudo mv /home/core/.cache/hekad.toml /etc/hekad.toml
+          - sudo mv /home/core/openshift/hekad /etc/
           - rm -rf /home/core/{pkg.tar.gz,.cache,openshift}
 
   digitalocean_domain:

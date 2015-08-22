@@ -1,5 +1,4 @@
 .cache/
-*.toml
 *.json
 *.tf.json
 *.tfvars

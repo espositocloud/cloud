@@ -50,15 +50,12 @@ compile:
 	@remarshal \
 		-if yaml -i vars.yaml \
 		-of json -o terraform.tfvars
-	@remarshal \
-		-if yaml -i openshift/hekad.yaml \
-		-of toml -o .cache/hekad.toml
 
 up: clean compile
 	@ssh-keygen -b 4096 -t rsa -f .cache/id -N ''
 	@tar -czf .cache/pkg.tar.gz \
 		openshift/ \
-		.cache/{setup-network-environment,openshift,bin,lib,share,hekad.toml}
+		.cache/{setup-network-environment,openshift,bin,lib,share}
 	@terraform plan -out terraform.tfplan
 	@terraform apply terraform.tfplan
 

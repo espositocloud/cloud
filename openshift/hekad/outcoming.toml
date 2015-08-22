@@ -1,0 +1,25 @@
+# https://hekad.readthedocs.org/en/dev/config/encoders/schema_influx.html
+[InfluxSchema]
+  type = 'SandboxEncoder'
+  filename = 'lua_encoders/schema_influx.lua'
+  [InfluxSchema.config]
+    series = "heka.%{Logger}"
+    #skip_fields: '"Pid EnvVersion"'
+
+# https://hekad.readthedocs.org/en/dev/config/outputs/http.html
+[InfluxOutput]
+  type = 'HttpOutput'
+  encoder = 'InfluxSchema'
+  message_matcher = "Type == 'influxdb'"
+  address = 'http://influxdb.default.svc.cluster.local/db/heka/series'
+  method = 'POST'
+  username = 'root'
+  password = 'root'
+
+# https://hekad.readthedocs.org/en/dev/config/encoders/payload.html
+[PayloadEncoder]
+
+# https://hekad.readthedocs.org/en/dev/config/outputs/log.html
+[LogOutput]
+  encoder = 'PayloadEncoder'
+  message_matcher = 'TRUE'

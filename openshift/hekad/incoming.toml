@@ -1,0 +1,34 @@
+# https://hekad.readthedocs.org/en/dev/config/inputs/docker_log.html
+[DockerLogInput]
+  endpoint = 'unix:///var/run/docker.sock'
+  decoder = 'MultiDecoder'
+
+# https://hekad.readthedocs.org/en/dev/config/decoders/multi.html
+[MultiDecoder]
+  log_sub_errors = true
+  cascade_strategy = 'first-wins'
+  subs = [
+    'NginxAccess',
+    'NginxError',
+    'PayloadRegexDecoder',
+  ]
+
+# https://hekad.readthedocs.org/en/dev/config/decoders/nginx_access.html
+[NginxAccess]
+  type = 'SandboxDecoder'
+  filename = 'lua_decoders/nginx_access.lua'
+  [NginxAccess.config]
+    type = 'nginx.access'
+    user_agent_transform = true
+    log_format = "$remote_addr - $remote_user [$msec] \"$request\" $status $body_bytes_sent \"$http_referer\" \"$http_user_agent\" \"$http_x_forwarded_for\""
+
+# https://hekad.readthedocs.org/en/dev/config/decoders/nginx_error.html
+[NginxError]
+  type = 'SandboxDecoder'
+  filename = 'lua_decoders/nginx_error.lua'
+  [NginxError.config]
+    type = 'nginx.error'
+
+# https://hekad.readthedocs.org/en/dev/config/decoders/payload_regex.html
+[PayloadRegexDecoder]
+  match_regex = '(...)'
