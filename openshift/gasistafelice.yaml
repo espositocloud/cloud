@@ -220,9 +220,6 @@ objects:
       spec:
         volumes:
         -
-          name: nginx-log
-          emptyDir: {}
-        -
           name: nginx-cache
           emptyDir: {}
         -
@@ -245,17 +242,13 @@ objects:
 #              path: /
 #              port: insecure-port
           securityContext:
-            runAsUser: 104
+            runAsUser: 0
             privileged: true
           ports:
           -
             name: insecure-port
             containerPort: 8080
           volumeMounts:
-          -
-            name: nginx-log
-            mountPath: /var/log/nginx
-            readOnly: false
           -
             name: nginx-cache
             mountPath: /var/cache/nginx
