@@ -112,7 +112,7 @@ objects:
         containers:
         -
           name: back
-          image: kobe25/gasistafelice-back
+          image: befair/gasistafelice-back
           ports:
           -
             name: back-port
@@ -187,7 +187,7 @@ objects:
         containers:
         -
           name: front
-          image: kobe25/gasistafelice-front
+          image: befair/gasistafelice-front
           ports:
           -
             name: front-port
@@ -228,7 +228,7 @@ objects:
         containers:
         -
           name: proxy
-          image: kobe25/gasistafelice-proxy
+          image: befair/gasistafelice-proxy
 #          livenessProbe:
 #            initialDelaySeconds: 10
 #            timeoutSeconds: 1
