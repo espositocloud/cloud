@@ -96,7 +96,7 @@ objects:
                 value: root
               -
                 name: PRE_CREATE_DB
-                value: k8s;heka;grafana
+                value: logs;k8s
 -
   apiVersion: v1
   kind: Service
