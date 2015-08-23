@@ -1,10 +1,10 @@
-# https://hekad.readthedocs.org/en/dev/config/filters/http_status.html
-#[HttpStatus]
-#  type = 'SandboxFilter'
-#  filename = 'lua_filters/http_status.lua'
+[HttpStatus]
+  type = 'SandboxFilter'
+  filename = 'lua_filters/http_status.lua'
+  message_matcher = 'Type == "nginx.access"'
+
 #  ticker_interval = 60
 #  preserve_data = true
-#  message_matcher = "Logger == 'nginx.access' && Type == 'fxa-auth-server'"
 #  [HttpStatus.config]
 #    sec_per_row = 60
 #    rows = 1440
