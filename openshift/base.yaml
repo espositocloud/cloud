@@ -6,6 +6,7 @@ items:
   kind: SecurityContextConstraints
   metadata:
     name: restricted
+  allowHostDirVolumePlugin: true
   allowPrivilegedContainer: true
   runAsUser:
     type: RunAsAny
