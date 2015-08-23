@@ -1,3 +1,0 @@
-[hekad]
-  base_dir = '/var/cache/hekad'
-  share_dir = '/opt/share/heka'
