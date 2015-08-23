@@ -119,8 +119,7 @@ output:
       scp -r -i .cache/id -o StrictHostKeyChecking=no .cache/master core@${digitalocean_droplet.nodes.0.ipv4_address}:./
   step1-bis:
     value: |
-      scp -r -i .cache/id -o StrictHostKeyChecking=no .cache/master core@${digitalocean_droplet.nodes.1.ipv4_address}:./; \
-      scp -r -i .cache/id -o StrictHostKeyChecking=no .cache/master core@${digitalocean_droplet.nodes.2.ipv4_address}:./
+      scp -r -i .cache/id -o StrictHostKeyChecking=no .cache/master core@${digitalocean_droplet.nodes.1.ipv4_address}:./
   step2:
     value: |
       log to master -- ssh -i .cache/id -o StrictHostKeyChecking=no core@${digitalocean_droplet.master.ipv4_address}
