@@ -13,8 +13,6 @@ coreos:
     advertise-client-urls: http://0.0.0.0:2379
     initial-cluster: master=http://${MASTER_IP}:2380
     proxy: on
-  fleet:
-    metadata: role=node
   units:
   -
     name: bootstrap-node.service
@@ -56,9 +54,6 @@ coreos:
       ExecStart=/usr/bin/echo 'Ready for starting OpenShift Node!'
       RemainAfterExit=yes
       Type=oneshot
-  -
-    name: fleet.service
-    command: start
   -
     name: docker.service
     command: start

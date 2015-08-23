@@ -17,8 +17,6 @@ coreos:
     initial-advertise-peer-urls: http://$private_ipv4:2380
     initial-cluster: master=http://$private_ipv4:2380
     initial-cluster-state: new
-  fleet:
-    metadata: role=master
   units:
   -
     name: bootstrap-master.service
@@ -56,9 +54,6 @@ coreos:
       ExecStartPost=/usr/bin/chown -R core:core ${HOME}/master/
       RemainAfterExit=yes
       Type=oneshot
-  -
-    name: fleet.service
-    command: start
   -
     name: docker.service
     command: start
