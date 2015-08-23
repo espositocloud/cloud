@@ -79,26 +79,6 @@ coreos:
       --config=${ONODE}/node-config.yaml
       Restart=always
       RestartSec=10
-  -
-    name: hekad.service
-    command: start
-    content: |
-      [Unit]
-      Description=Hekad
-      Documentation=https://hekad.readthedocs.org/en/latest/
-      Requires=openshift-node.service docker.service
-      After=openshift-node.service docker.service
-
-      [Service]
-      ExecStartPre=/opt/bin/wufae /opt/share/heka/LICENSE.txt
-      ExecStartPre=/opt/bin/wufae /opt/lib/libluasb.so.5.1.5.1
-      ExecStartPre=/opt/bin/wufae /opt/bin/hekad
-      ExecStartPre=/opt/bin/wufae /etc/hekad/global.toml
-      ExecStartPre=/usr/bin/chown root:root /opt/bin/hekad
-      ExecStartPre=/usr/bin/chmod +x /opt/bin/hekad
-      ExecStart=/opt/bin/hekad -config=/etc/hekad
-      Restart=always
-      RestartSec=10
 write-files:
 -
   path: /opt/bin/wupiao

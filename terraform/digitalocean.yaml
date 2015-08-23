@@ -1,6 +1,6 @@
 variable:
   BASE_DOMAIN:    { default: befaircloud.me }
-  NODES:          { default: 2 }
+  NODES:          { default: 1 }
   OMASTER:        { default: /opt/bin/openshift.local.config/master }
   ONODE:          { default: /opt/bin/openshift.local.config/node }
   # Provider specific
@@ -9,7 +9,7 @@ variable:
   DO_IMAGE:       { default: coreos-alpha }
   DO_REGION:      { default: fra1 }
   DO_MASTER_SIZE: { default: 1gb }
-  DO_NODE_SIZE:   { default: 2gb }
+  DO_NODE_SIZE:   { default: 4gb }
 
 provider:
   digitalocean:
@@ -62,7 +62,7 @@ resource:
           destination: /home/core/pkg.tar.gz
         remote-exec:
           inline:
-          - sudo mkdir -p /opt/{bin,lib,share}/
+          - sudo mkdir -p /opt/bin/
           - tar -xf /home/core/pkg.tar.gz -C /home/core
           - sudo mv /home/core/.cache/setup-network-environment /opt/bin/
           - sudo mv /home/core/.cache/openshift /opt/bin/
@@ -92,14 +92,10 @@ resource:
           destination: /home/core/pkg.tar.gz
         remote-exec:
           inline:
-          - sudo mkdir -p /opt/{bin,lib,share}/
+          - sudo mkdir -p /opt/bin/
           - tar -xf /home/core/pkg.tar.gz -C /home/core
           - sudo mv /home/core/.cache/setup-network-environment /opt/bin/
           - sudo mv /home/core/.cache/openshift /opt/bin/
-          - sudo mv /home/core/.cache/bin/*   /opt/bin/
-          - sudo mv /home/core/.cache/lib/*   /opt/lib/
-          - sudo mv /home/core/.cache/share/* /opt/share/
-          - sudo mv /home/core/openshift/hekad /etc/
           - rm -rf /home/core/{pkg.tar.gz,.cache,openshift}
 
   digitalocean_domain:
