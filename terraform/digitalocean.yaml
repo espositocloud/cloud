@@ -1,6 +1,6 @@
 variable:
   BASE_DOMAIN:    { default: befaircloud.me }
-  NODES:          { default: 3 }
+  NODES:          { default: 2 }
   OMASTER:        { default: /opt/bin/openshift.local.config/master }
   ONODE:          { default: /opt/bin/openshift.local.config/node }
   # Provider specific
