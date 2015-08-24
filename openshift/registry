@@ -1,9 +1,0 @@
-#!/bin/bash
-
-sudo mkdir -p /var/lib/openshift/docker-registry
-oadm registry \
-  --config=${OMASTER}/admin.kubeconfig \
-  --credentials=${OMASTER}/openshift-registry.kubeconfig
-#  --mount-host=/var/lib/openshift/docker-registry
-#  --service-account=registry \
-#  --selector="role=node"

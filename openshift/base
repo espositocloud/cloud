@@ -2,6 +2,5 @@
 
 oc delete scc privileged restricted
 oc create -f base.yaml
-./registry
 ./router
 ./monitoring

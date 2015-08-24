@@ -38,11 +38,6 @@ items:
   apiVersion: v1
   kind: ServiceAccount
   metadata:
-    name: registry
--
-  apiVersion: v1
-  kind: ServiceAccount
-  metadata:
     name: router
 -
   apiVersion: v1
