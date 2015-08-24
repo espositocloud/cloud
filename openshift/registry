@@ -1,5 +1,4 @@
 #!/bin/bash
-# https://docs.openshift.org/latest/admin_guide/install/docker_registry.html
 
 sudo mkdir -p /var/lib/openshift/docker-registry
 oadm registry \

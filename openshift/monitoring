@@ -1,5 +1,4 @@
 #!/bin/bash
-# https://docs.openshift.org/latest/admin_guide/cluster_metrics.html
 
 oadm policy add-cluster-role-to-user \
   cluster-reader \
@@ -10,8 +9,3 @@ oc new-app -f monitoring.yaml \
   -p BASE_DOMAIN=${BASE_DOMAIN}
 
 ./watch
-
-# Logging
-# https://docs.openshift.org/latest/admin_guide/aggregate_logging.html
-# http://kubernetes.io/v1.0/docs/user-guide/logging.html
-# http://kubernetes.io/v1.0/docs/getting-started-guides/logging-elasticsearch.html

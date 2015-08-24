@@ -1,9 +1,8 @@
 #!/bin/bash
-# https://docs.openshift.org/latest/admin_guide/install/deploy_router.html
-# https://docs.openshift.org/latest/architecture/core_concepts/routes.html
-# http://blog.kubernetes.io/2015/07/strong-simple-ssl-for-kubernetes.html
 
-oadm router ex-router \
-  --replicas=1 \
+oc delete all -l router=external
+oadm router external \
   --credentials=${KUBECONFIG} \
-  --service-account=router
+  --service-account=router \
+  --replicas=1 \
+  --selector="kubernetes.io/hostname=10.135.17.219"

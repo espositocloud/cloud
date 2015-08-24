@@ -112,3 +112,4 @@ write-files:
     export KUBECONFIG=${OMASTER}/admin.kubeconfig
     export CURL_CA_BUNDLE=${OMASTER}/ca.crt
     export BASE_DOMAIN=${BASE_DOMAIN}
+    export NODES=${NODES}
