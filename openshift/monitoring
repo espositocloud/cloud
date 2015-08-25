@@ -6,6 +6,6 @@ oadm policy add-cluster-role-to-user \
 
 oc delete all -l app=monit
 oc new-app -f monitoring.yaml \
-  -p BASE_DOMAIN=${BASE_DOMAIN}
+  -p BASE_DOMAIN=${BASE_DOMAIN},NODES=${NODES}
 
 ./watch

@@ -13,6 +13,9 @@ parameters:
   name: BASE_DOMAIN
   description: server name
 -
+  name: NODES
+  description: number of nodes
+-
   name: INFLUXDB_PASSWORD
   description: Password used for DB authentication
   generate: expression
@@ -208,7 +211,7 @@ objects:
     labels:
       component: heka
   spec:
-    replicas: 1
+    replicas: ${NODES}
     selector:
       component: heka
     template:
