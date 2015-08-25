@@ -45,7 +45,8 @@ coreos:
       --master=https://$private_ipv4:8443 \
       --public-master=https://$public_ipv4:8443 \
       --dns=tcp://$private_ipv4:53 \
-      --etcd=http://$private_ipv4:2379
+      --etcd=http://$private_ipv4:2379 \
+      --network-cidr='10.1.0.0/16'
       # Copy files for nodes
       ExecStartPost=/usr/bin/chmod +r ${OMASTER}/admin.kubeconfig
       ExecStartPost=/usr/bin/chmod +r ${OMASTER}/openshift-registry.kubeconfig
@@ -54,6 +55,16 @@ coreos:
       ExecStartPost=/usr/bin/chown -R core:core ${HOME}/master/
       RemainAfterExit=yes
       Type=oneshot
+  -
+    name: flanneld.service
+    command: start
+    drop-ins:
+    - name: 50-network-config.conf
+      content: |
+        [Unit]
+        Requires=etcd2.service
+        [Service]
+        ExecStartPre=/usr/bin/etcdctl set /coreos.com/network/config '{"Network":"10.244.0.0/16", "Backend": {"Type": "vxlan"}}'
   -
     name: docker.service
     command: start
