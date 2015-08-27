@@ -1,0 +1,30 @@
+#!/bin/bash
+
+BASE_DOMAIN=befaircloud.me
+DOMAIN=http://gf.${BASE_DOMAIN}
+
+DOMAIN_A=${DOMAIN}
+DOMAIN_B=${DOMAIN}/gasistafelice
+DOMAIN_C=${DOMAIN}/gasistafelice/admin
+
+TOTAL_REQUESTS=10000
+CONCURRENT_REQUESTS=100
+
+
+boom \
+  -n ${TOTAL_REQUESTS} \
+  -c ${CONCURRENT_REQUESTS} \
+  -cpus 4 \
+  ${DOMAIN_A}
+
+boom \
+  -n ${TOTAL_REQUESTS} \
+  -c ${CONCURRENT_REQUESTS} \
+  -cpus 4 \
+  ${DOMAIN_B}
+
+boom \
+  -n ${TOTAL_REQUESTS} \
+  -c ${CONCURRENT_REQUESTS} \
+  -cpus 4 \
+  ${DOMAIN_C}

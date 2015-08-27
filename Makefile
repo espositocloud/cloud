@@ -16,8 +16,10 @@ help:
 
 install:
 	@mkdir -p .cache
-	@go get github.com/dbohdan/remarshal
+	@go get -u github.com/dbohdan/remarshal
+	@go get -u github.com/rakyll/boom
 	@go install github.com/dbohdan/remarshal
+	@go install github.com/rakyll/boom
 	@curl -L -o .cache/setup-network-environment -z .cache/setup-network-environment ${NETENV_URL}
 	@curl -L -o .cache/terraform.zip             -z .cache/terraform.zip             ${TF_URL}
 	@curl -L -o .cache/openshift-origin.tar.gz   -z .cache/openshift-origin.tar.gz   ${OS_URL}
@@ -64,3 +66,6 @@ delete destroy: compile
 # https://terraform.io/docs/commands/graph.html
 infrastructure-graph:
 	@terraform graph | dot -Tsvg > graph.svg
+
+test:
+	@./test
