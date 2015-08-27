@@ -155,9 +155,6 @@ objects:
 #              command:
 #              - cat
 #              - /tmp/health
-          securityContext:
-            runAsUser: 1000
-            privileged: true
 -
   apiVersion: v1
   kind: Service
