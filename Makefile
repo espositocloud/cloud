@@ -68,4 +68,4 @@ infrastructure-graph:
 	@terraform graph | dot -Tsvg > graph.svg
 
 test:
-	@./test
+	@./benchmark
