@@ -197,7 +197,7 @@ objects:
     labels:
       component: heka
   spec:
-    replicas: ${NODES}
+    replicas: 2
     selector:
       component: heka
     template:

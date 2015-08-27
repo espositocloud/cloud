@@ -15,6 +15,8 @@ help:
 	@cat Makefile
 
 install:
+	@mkdir -p .cache
+	@go get github.com/dbohdan/remarshal
 	@go install github.com/dbohdan/remarshal
 	@curl -L -o .cache/setup-network-environment -z .cache/setup-network-environment ${NETENV_URL}
 	@curl -L -o .cache/terraform.zip             -z .cache/terraform.zip             ${TF_URL}
@@ -50,7 +52,7 @@ up: clean compile
 	@ssh-keygen -b 4096 -t rsa -f .cache/id -N ''
 	@tar -czf .cache/pkg.tar.gz \
 		openshift/ \
-		.cache/{setup-network-environment,openshift,bin,lib,share}
+		.cache/{setup-network-environment,openshift}
 	@terraform plan -out terraform.tfplan
 	@terraform apply terraform.tfplan
 
