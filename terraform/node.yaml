@@ -49,6 +49,7 @@ coreos:
       --hostnames=$private_ipv4 \
       --listen=https://0.0.0.0:10250 \
       --volume-dir=/var/volumes
+      ExecStartPre=/bin/sh -c 'sed -i "$ a\kubeletArguments: { read-only-port: [ \'10255\' ] }" ${ONODE}/node-config.yaml'
       # wait for kubernetes master to be up and ready
       ExecStartPre=/opt/bin/wupiao ${MASTER_IP} 8443
       ExecStart=/usr/bin/echo 'Ready for starting OpenShift Node!'

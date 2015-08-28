@@ -9,7 +9,7 @@ variable:
   DO_IMAGE:       { default: coreos-alpha }
   DO_REGION:      { default: fra1 }
   DO_MASTER_SIZE: { default: 1gb }
-  DO_NODE_SIZE:   { default: 2gb }
+  DO_NODE_SIZE:   { default: 1gb }
 
 provider:
   digitalocean:
