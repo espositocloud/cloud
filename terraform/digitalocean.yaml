@@ -123,5 +123,6 @@ output:
     value: |
       log to master -- ssh -i .cache/id -o StrictHostKeyChecking=no core@${digitalocean_droplet.master.ipv4_address}
       log to node-0 -- ssh -i .cache/id -o StrictHostKeyChecking=no core@${digitalocean_droplet.nodes.0.ipv4_address}
+      log to node-1 -- ssh -i .cache/id -o StrictHostKeyChecking=no core@${digitalocean_droplet.nodes.1.ipv4_address}
       dashboard -- https://${digitalocean_droplet.master.ipv4_address}:8443
       entrypoint -- http://${var.BASE_DOMAIN}
