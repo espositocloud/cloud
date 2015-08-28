@@ -10,13 +10,13 @@ coreos:
     reboot-strategy: off
   etcd2:
     name: master
-    listen-client-urls: http://0.0.0.0:2379
-    advertise-client-urls: http://$private_ipv4:2379
-    initial-cluster-token: k8s_etcd
-    listen-peer-urls: http://$private_ipv4:2380
-    initial-advertise-peer-urls: http://$private_ipv4:2380
-    initial-cluster: master=http://$private_ipv4:2380
     initial-cluster-state: new
+    initial-cluster-token: k8s_etcd
+    initial-cluster: master=http://$private_ipv4:2380
+    initial-advertise-peer-urls: http://$private_ipv4:2380
+    advertise-client-urls: http://$private_ipv4:2379
+    listen-client-urls: http://0.0.0.0:2379
+    listen-peer-urls: http://$private_ipv4:2380
   units:
   -
     name: bootstrap-master.service

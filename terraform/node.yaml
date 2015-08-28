@@ -9,10 +9,10 @@ coreos:
     group: alpha
     reboot-strategy: off
   etcd2:
-    listen-client-urls: http://0.0.0.0:2379
-    advertise-client-urls: http://0.0.0.0:2379
-    initial-cluster: master=http://${MASTER_IP}:2380
     proxy: on
+    initial-cluster: master=http://${MASTER_IP}:2380
+    advertise-client-urls: http://0.0.0.0:2379
+    listen-client-urls: http://0.0.0.0:2379
   units:
   -
     name: bootstrap-node.service
