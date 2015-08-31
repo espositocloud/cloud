@@ -1,6 +1,12 @@
 #!/bin/bash
 
+# Set the permissions for our needs
 oc delete scc privileged restricted
 oc create -f base.yaml
+oadm policy add-cluster-role-to-user \
+  cluster-reader \
+  system:serviceaccount:default:heapster
+
+# Run the router and monitoring scripts
 ./router
 ./monitoring

@@ -1,11 +1,11 @@
 #!/bin/bash
 
-oadm policy add-cluster-role-to-user \
-  cluster-reader \
-  system:serviceaccount:default:heapster
-
+# Delete all components of Monitoring Stack
 oc delete all -l app=monit
+
+# Create a new Monitoring Stack
 oc new-app -f monitoring.yaml \
   -p BASE_DOMAIN=${BASE_DOMAIN},NODES=${NODES}
 
-./watch
+# Watch pods in real-time
+./watch_pods

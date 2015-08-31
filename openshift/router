@@ -1,6 +1,9 @@
 #!/bin/bash
 
+# Delete all router components
 oc delete all -l router=external
+
+# Create a new router for external requests
 oadm router external \
   --credentials=${KUBECONFIG} \
   --service-account=router \
