@@ -6,7 +6,7 @@ variable:
   # Provider specific
   DO_TOKEN:       {}
   DO_SSH_ID:      { default: core }
-  DO_IMAGE:       { default: coreos-alpha }
+  DO_IMAGE:       { default: coreos-beta }
   DO_REGION:      { default: fra1 }
   DO_MASTER_SIZE: { default: 1gb }
   DO_NODE_SIZE:   { default: 2gb }
