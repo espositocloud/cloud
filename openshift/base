@@ -1,11 +1,16 @@
 #!/bin/bash
 
-# Set the permissions for our needs
+# Recreate the securityContextContraints permissions in order to meet our needs
 oc delete scc privileged restricted
 oc create -f base.yaml
+
+# Permit heapster to read cluster data
 oadm policy add-cluster-role-to-user \
   cluster-reader \
   system:serviceaccount:default:heapster
+
+# Permin admin user to manage default namespace
+oc policy add-role-to-user admin admin -n default
 
 # Run the router and monitoring scripts
 ./router
