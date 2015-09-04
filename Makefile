@@ -3,7 +3,6 @@ TF_V := 0.6.3
 OS_V := 1.0.5
 OS_COMMIT := 96963b6
 
-#export GOPATH := ${GOPATH}
 BINPATH := ${GOPATH}/bin
 export PATH := ${GOPATH}/bin:${PATH}
 TF_URL := https://dl.bintray.com/mitchellh/terraform/terraform_${TF_V}_linux_amd64.zip
